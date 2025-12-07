@@ -238,7 +238,7 @@ const App: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 pb-64 print:pb-0 print:h-auto print:overflow-visible">
+      <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 pb-96 print:pb-0 print:h-auto print:overflow-visible">
 
         {/* Top Controls: Tabs & Plan Selection */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 print:block">

@@ -1,0 +1,5 @@
+{
+  "name": "First Leaf Plan Estimator",
+  "description": "A single-page funeral plan estimation tool with real-time calculation, category switching, and print capabilities.",
+  "requestFramePermissions": []
+}

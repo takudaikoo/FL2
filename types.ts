@@ -32,6 +32,7 @@ export interface Item {
   id: number;
   name: string;
   description: string; // Used for modal
+  displayOrder: number;
   type: ItemType;
   allowedPlans: PlanId[]; // Which plans show this item
 

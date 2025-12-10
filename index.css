@@ -814,6 +814,32 @@ select {
   .print\:overflow-visible {
     overflow: visible !important;
   }
+
+  /* Hide main app and show quote document during print */
+  body > div:first-child > main {
+    display: none !important;
+  }
+
+  body > div:first-child > header {
+    display: none !important;
+  }
+
+  #quote-document {
+    display: block !important;
+    position: relative;
+    margin: 0;
+    padding: 20mm;
+  }
+
+  .quote-document {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure proper sizing */
+  @page {
+    size: A4;
+    margin: 0;
+  }
 }
 
 /* Responsive grid fix */

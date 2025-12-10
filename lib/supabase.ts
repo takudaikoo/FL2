@@ -20,6 +20,7 @@ export interface Item {
     id: number;
     name: string;
     description: string;
+    display_order: number;
     type: 'included' | 'checkbox' | 'dropdown' | 'tier_dependent' | 'free_input';
     base_price?: number;
     allowed_plans: string[];

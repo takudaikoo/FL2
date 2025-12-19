@@ -41,3 +41,18 @@
 **次のステップ**: SQLとアカウント作成が完了したら、フロントエンドの実装を続けます。
 
 完了したら教えてください！
+
+## トラブルシューティング
+
+### "violates check constraint items_type_check" エラー
+「自由入力」アイテムを追加する際にこのエラーが出る場合、データベースの定義が古くなっています。
+SupabaseのSQL Editorで以下のSQLを実行して更新してください：
+
+```sql
+DO $$
+BEGIN
+    ALTER TABLE items DROP CONSTRAINT IF EXISTS items_type_check;
+    ALTER TABLE items ADD CONSTRAINT items_type_check 
+    CHECK (type IN ('included', 'checkbox', 'dropdown', 'tier_dependent', 'free_input'));
+END $$;
+```

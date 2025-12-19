@@ -55,7 +55,7 @@ const ItemsManager: React.FC = () => {
                 description: editingItem.description,
                 display_order: editingItem.displayOrder,
                 type: editingItem.type,
-                base_price: editingItem.basePrice,
+                base_price: editingItem.basePrice || 0,
                 allowed_plans: editingItem.allowedPlans,
                 tier_prices: editingItem.tierPrices,
                 options: editingItem.options,

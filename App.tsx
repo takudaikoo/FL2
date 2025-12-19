@@ -5,7 +5,7 @@ import { PlanCategory, PlanId, AttendeeTier, Item, DropdownOption, Plan, Attende
 import DetailModal from './components/DetailModal';
 import Footer from './components/Footer';
 import QuoteDocument from './components/QuoteDocument';
-import { Info, Check, AlertCircle } from 'lucide-react';
+import { Info, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -23,6 +23,7 @@ const App: React.FC = () => {
 
   // Modal state
   const [modalItem, setModalItem] = useState<Item | null>(null);
+  const [isIncludedOpen, setIsIncludedOpen] = useState(false);
 
   // Supabase data
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -457,25 +458,56 @@ const App: React.FC = () => {
                     <tbody className="divide-y divide-gray-100 text-sm md:text-base">
 
                       {/* 1. Included Items (Always top) */}
-                      {items.filter(i => i.type === 'included' && i.allowedPlans.includes(selectedPlanId)).map(item => (
-                        <tr key={item.id} className="hover:bg-gray-50 group">
-                          <td className="p-3 pl-4">
-                            <div className="font-medium text-gray-700">{item.name}</div>
-                            <div className="text-xs text-gray-400 mt-0.5 md:hidden">{item.description}</div>
-                          </td>
-                          <td className="p-3 text-right font-medium text-gray-500">プランに含む</td>
-                          <td className="p-3 text-center">
-                            <button onClick={() => setModalItem(item)} className="text-gray-400 hover:text-emerald-600">
-                              <Info size={18} />
-                            </button>
-                          </td>
-                          <td className="p-3 pr-4 text-center">
-                            <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-200 text-gray-500">
-                              <Check size={14} />
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                      {/* 1. Included Items (Accordion) */}
+                      {(() => {
+                        const includedItems = items.filter(i => i.type === 'included' && i.allowedPlans.includes(selectedPlanId));
+                        if (includedItems.length === 0) return null;
+
+                        return (
+                          <>
+                            <tr
+                              className="bg-emerald-50/50 hover:bg-emerald-50 cursor-pointer transition-colors"
+                              onClick={() => setIsIncludedOpen(!isIncludedOpen)}
+                            >
+                              <td colSpan={4} className="p-3 pl-4">
+                                <div className="flex items-center gap-2 font-bold text-emerald-700">
+                                  {isIncludedOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                  プランに含まれるもの ({includedItems.length}点)
+                                  <span className="text-xs font-normal text-gray-500 ml-2">
+                                    {isIncludedOpen ? 'クリックで閉じる' : 'クリックで詳細を表示'}
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+
+                            {isIncludedOpen && includedItems.map(item => (
+                              <tr key={item.id} className="hover:bg-gray-50 group bg-white">
+                                <td className="p-3 pl-8 border-l-4 border-emerald-100">
+                                  <div className="font-medium text-gray-700">{item.name}</div>
+                                  <div className="text-xs text-gray-400 mt-0.5 md:hidden">{item.description}</div>
+                                </td>
+                                <td className="p-3 text-right font-medium text-gray-500">プランに含む</td>
+                                <td className="p-3 text-center">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setModalItem(item);
+                                    }}
+                                    className="text-gray-400 hover:text-emerald-600"
+                                  >
+                                    <Info size={18} />
+                                  </button>
+                                </td>
+                                <td className="p-3 pr-4 text-center">
+                                  <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600">
+                                    <Check size={14} />
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </>
+                        );
+                      })()}
 
                       {/* Divider */}
                       <tr>

@@ -19,7 +19,7 @@ const Footer: React.FC<FooterProps> = ({ total, onPrint, onDownloadPDF }) => {
           {/* PDF Download Button */}
           <button
             onClick={onDownloadPDF}
-            className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0"
+            className="flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-full font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0"
           >
             <Download size={28} />
             <span>PDF出力</span>

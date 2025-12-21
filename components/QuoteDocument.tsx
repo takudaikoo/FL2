@@ -24,32 +24,19 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
     totalCost,
     attendeeLabel,
 }) => {
-    const TAX_RATE = 0.10; // 10%
+    const TAX_RATE = 0.10;
     const totalWithTax = Math.floor(totalCost * (1 + TAX_RATE));
-    const today = new Date().toLocaleDateString('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    });
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}年 ${today.getMonth() + 1}月 ${today.getDate()}日`;
 
     // --- Helpers ---
-
-    // Get all items to display (included + selected options)
     const displayItems = items.filter((item) => {
         if (!item.allowedPlans.includes(plan.id)) return false;
-
-        // Always show free input
         if (item.type === 'free_input') return true;
-
-        // Included items
         if (item.type === 'included') return true;
-
-        // Checkbox / Tier Dependent
         if (item.type === 'checkbox' || item.type === 'tier_dependent') {
             return selectedOptions.has(item.id);
         }
-
-        // Dropdown
         if (item.type === 'dropdown') {
             return selectedGrades.has(item.id);
         }
@@ -57,7 +44,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
     });
 
     const getItemPrice = (item: Item): number => {
-        if (item.type === 'checkbox') return item.basePrice || 0;
+        if (item.type === 'checkbox' || item.type === 'included') return item.basePrice || 0;
         if (item.type === 'dropdown') {
             const gradeId = selectedGrades.get(item.id);
             if (gradeId && item.options) {
@@ -81,127 +68,257 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
         return 0;
     };
 
-    const getItemLabel = (item: Item): string => {
+    const getItemContent = (item: Item): string => {
         if (item.type === 'dropdown') {
             const gradeId = selectedGrades.get(item.id);
             if (gradeId && item.options) {
                 const option = item.options.find(o => o.id === gradeId);
-                return option?.name || '';
+                return option?.name || '-';
             }
         }
         if (item.type === 'tier_dependent') {
-            if (attendeeTier === 'D') return `(${customAttendeeCount}名)`;
-            // Could map tier to label if needed, but keeping it simple
-            return '';
+            if (attendeeTier === 'D') {
+                return `${customAttendeeCount}名`;
+            }
+            // For static tiers, maybe show nothing or tier name?
+            return '-';
+        }
+        if (item.type === 'free_input') {
+            // For free input, usually no extra detail unless we add a note field later
+            return '-';
+        }
+        if (item.type === 'included') {
+            return '-';
         }
         return '-';
     };
 
-    // --- Layout Constants (mm) ---
-    // A4: 210 x 297
+    // Prepare table rows (Fixed 25 rows for A4 layout)
+    const MAX_ROWS = 25;
+    const tableRows = Array.from({ length: MAX_ROWS }).map((_, index) => {
+        const item = displayItems[index];
+        return {
+            name: item ? item.name : '',
+            content: item ? getItemContent(item) : '',
+            price: item ? getItemPrice(item) : null,
+        };
+    });
 
     return (
         <div
             id="quote-document"
-            style={{
-                width: '210mm',
-                height: '297mm',
-                position: 'relative',
-                fontFamily: '"Example Font", "Yu Gothic", sans-serif', // Adjust font as needed
-                color: '#333'
-            }}
+            className="w-[210mm] h-[297mm] bg-white text-gray-900 overflow-hidden relative"
+            style={{ padding: '15mm', boxSizing: 'border-box', fontFamily: '"Yu Mincho", "YuMincho", serif' }}
         >
-            {/* Background Image - Using img tag for better print support */}
-            <img
-                src="/quote_template.jpg"
-                alt=""
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    zIndex: 0
-                }}
-            />
+            {/* Header Title */}
+            <h1 className="text-3xl font-bold mb-4 tracking-wider border-b-2 border-black pb-2">御葬儀見積書兼申込書</h1>
 
-            {/* Date (Top Right) */}
-            <div style={{ position: 'absolute', top: '23mm', left: '138mm', fontSize: '10pt', backgroundColor: 'transparent', zIndex: 1 }}>
-                {today}
-            </div>
+            <div className="flex gap-8 h-full">
+                {/* --- Left Column: Form & Info --- */}
+                <div className="w-[45%] flex flex-col gap-4">
 
-            {/* Plan Name (Bottom Left Green Box) */}
-            <div style={{
-                position: 'absolute',
-                top: '228mm',
-                left: '12mm',
-                width: '90mm',
-                height: '35mm',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: 'white',
-                textAlign: 'center',
-                zIndex: 1
-            }}>
-                <h2 style={{ fontSize: '18pt', fontWeight: 'bold', margin: 0 }}>{plan.name}</h2>
-                <p style={{ fontSize: '12pt', marginTop: '5mm' }}>参列人数: {attendeeLabel}</p>
-            </div>
-
-            {/* Items Table (Right Column) */}
-            {/* Overlaying the table rows. Assuming fixed row height approx 7.2mm based on manual estimation. */}
-            {/* Start Y approx 65mm */}
-            <div style={{ position: 'absolute', top: '65mm', left: '106mm', width: '92mm', fontSize: '9pt', zIndex: 1 }}>
-                {displayItems.map((item, index) => {
-                    // Start rendering from the first row.
-                    // Max rows approx 20?
-                    if (index > 22) return null; // Prevent overflow
-
-                    const rowHeight = '7.5mm'; // Adjusted based on standard template line height
-                    const price = getItemPrice(item);
-
-                    return (
-                        <div
-                            key={item.id}
-                            style={{
-                                height: rowHeight,
-                                display: 'flex',
-                                alignItems: 'center',
-                                backgroundColor: 'rgba(255,255,255,0.95)', // Semi-opaque to hide pre-printed text if mismatch
-                                borderBottom: '1px solid #ddd',
-                            }}
-                        >
-                            {/* Item Name */}
-                            <div style={{ width: '42mm', paddingLeft: '2mm', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                                {item.name}
+                    {/* Customer Info Form */}
+                    <div>
+                        <h2 className="text-lg font-bold mb-1">顧客情報記入欄</h2>
+                        <div className="border-2 border-black">
+                            {/* Date Field */}
+                            <div className="flex border-b border-gray-400 h-10">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-sm">死亡月日</div>
+                                <div className="flex-1 flex items-center justify-end px-2 text-sm">年　　月　　日</div>
                             </div>
-                            {/* Option/Detail */}
-                            <div style={{ width: '27mm', textAlign: 'center', fontSize: '8pt' }}>
-                                {getItemLabel(item)}
+
+                            {/* Name */}
+                            <div className="flex border-b border-gray-400 h-14">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-sm">氏　　名</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
                             </div>
-                            {/* Price */}
-                            <div style={{ width: '23mm', textAlign: 'right', paddingRight: '2mm', fontWeight: 'bold' }}>
-                                {price > 0 ? `¥${price.toLocaleString()}` : ''}
+
+                            {/* Birth Date */}
+                            <div className="flex border-b border-gray-400 h-10">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-sm">生年月日</div>
+                                <div className="flex-1 flex items-center justify-end px-2 text-sm">年　　月　　日　　才</div>
+                            </div>
+
+                            {/* Address */}
+                            <div className="flex border-b border-gray-400 h-14">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-sm">現 住 所</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
+                            </div>
+
+                            {/* Honseki */}
+                            <div className="flex border-b border-gray-400 h-14">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-sm">本　　籍</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
+                            </div>
+
+                            {/* Applicant Info Header */}
+                            <div className="bg-gray-200 border-b border-gray-400 h-6 flex items-center px-2 text-xs font-bold">申込者情報</div>
+
+                            {/* Rep/Relation */}
+                            <div className="flex border-b border-gray-400 h-10">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs">代表者氏名</div>
+                                <div className="flex-1 flex">
+                                    <div className="flex-1 bg-blue-50/30 border-r border-gray-400"></div>
+                                    <div className="w-12 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs">続柄</div>
+                                    <div className="w-16 bg-blue-50/30"></div>
+                                </div>
+                            </div>
+                            {/* Chief Mourner */}
+                            <div className="flex border-b border-gray-400 h-10">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs">喪主氏名</div>
+                                <div className="flex-1 flex items-center justify-end px-2 text-sm bg-blue-50/30">年　　月　　日　　才</div>
+                            </div>
+
+                            {/* Address 2 */}
+                            <div className="flex border-b border-gray-400 h-14">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-sm">住　　所</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
+                            </div>
+
+                            {/* Honseki 2 */}
+                            <div className="flex border-b border-gray-400 h-10">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-sm">本　　籍</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
+                            </div>
+
+                            {/* Phone */}
+                            <div className="flex border-b border-gray-400 h-8">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs">電話番号</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
+                            </div>
+                            {/* Mobile */}
+                            <div className="flex border-b border-black h-8">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs">携帯番号</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
+                            </div>
+
+                            {/* Others Header */}
+                            <div className="bg-gray-200 border-b border-gray-400 h-6 flex items-center px-2 text-xs font-bold">その他</div>
+
+                            {/* Religion */}
+                            <div className="flex border-b border-gray-400 h-8">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs">宗旨・宗派</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
+                            </div>
+
+                            {/* Temple Info */}
+                            <div className="flex border-b border-gray-400 h-[72px]">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs">菩提寺情報</div>
+                                <div className="flex-1 flex flex-col h-full">
+                                    <div className="flex-1 border-b border-gray-200 flex items-center px-1 text-xs"><span className="w-8">名称</span></div>
+                                    <div className="flex-1 border-b border-gray-200 flex items-center px-1 text-xs"><span className="w-8">電話</span></div>
+                                    <div className="flex-1 flex items-center px-1 text-xs"><span className="w-8">FAX</span></div>
+                                </div>
+                            </div>
+                            {/* Intro */}
+                            <div className="flex h-8">
+                                <div className="w-24 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs">ご 紹 介</div>
+                                <div className="flex-1 bg-blue-50/30"></div>
                             </div>
                         </div>
-                    );
-                })}
-            </div>
+                    </div>
 
-            {/* Totals (Bottom Right) */}
-            {/* Subtotal */}
-            <div style={{ position: 'absolute', top: '249mm', left: '170mm', width: '28mm', textAlign: 'right', fontSize: '11pt', fontWeight: 'bold', zIndex: 1 }}>
-                ¥{totalCost.toLocaleString()}
-            </div>
-            {/* Tax */}
-            <div style={{ position: 'absolute', top: '256.5mm', left: '170mm', width: '28mm', textAlign: 'right', fontSize: '11pt', fontWeight: 'bold', zIndex: 1 }}>
-                ¥{Math.floor(totalCost * TAX_RATE).toLocaleString()}
-            </div>
-            {/* Grand Total */}
-            <div style={{ position: 'absolute', top: '264mm', left: '170mm', width: '28mm', textAlign: 'right', fontSize: '14pt', fontWeight: 'bold', zIndex: 1 }}>
-                ¥{totalWithTax.toLocaleString()}
+                    {/* Selected Plan Section */}
+                    <div className="mt-2">
+                        <h2 className="text-lg font-bold mb-1">選択されたプラン</h2>
+                        <div className="border-2 border-emerald-600 rounded-xl overflow-hidden min-h-[120px]">
+                            <div className="bg-emerald-600 text-white font-bold p-2 text-center text-lg">
+                                {plan.name}
+                            </div>
+                            <div className="p-4 flex items-center justify-center h-full">
+                                {/* Placeholder for plan details or keeping it clean as in design */}
+                                <div className="text-center">
+                                    <p>参列人数: {attendeeLabel}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Disclaimer / Notes */}
+                    <div className="mt-auto text-[8pt] text-gray-600 leading-tight">
+                        <h3 className="font-bold text-sm mb-1 text-black">注意事項</h3>
+                        <p>※個人情報の取扱い場合は提供することにより適切日以時においたや 個人情報(について)、担当機関 葬儀お達人情報など、開催者は お客さま個人情報サービスをご理解に状況でもご使用になることでありません。</p>
+                        <p>※振込金額は3日(日)までに消費期間等はお振込ついてください。</p>
+                        <p>※振込金額の事務及び提供するサービスは手数料などの関係によってもらえるのでは、第二期に金額がありません。</p>
+                        {/* Note: Use filler text roughly matching the image since OCR was partial */}
+                    </div>
+
+                </div>
+
+                {/* --- Right Column: Estimate --- */}
+                <div className="w-[55%] flex flex-col">
+                    {/* Header Info */}
+                    <div className="flex justify-between items-end mb-4 border-b border-black pb-1">
+                        <div className="text-sm">日付 （　　　　　）</div>
+                        <div className="text-sm">No.</div>
+                    </div>
+
+                    <div className="flex mb-4">
+                        {/* Logo Placeholder */}
+                        <div className="w-16 h-16 mr-4 flex items-center justify-center">
+                            {/* Design has a leaf logo here */}
+                            <span className="text-4xl text-emerald-500">🌿</span>
+                        </div>
+                        <div className="text-sm">
+                            <div className="font-bold text-lg">株式会社ファーストリーフ</div>
+                            <div>〒253-0085 神奈川県茅ヶ崎市矢畑682-10</div>
+                            <div>代表 大石慶太</div>
+                        </div>
+                    </div>
+
+                    {/* Items Table */}
+                    <div className="flex-1 border text-sm"> {/* Main border handled by rows */}
+                        <div className="bg-gray-200 border-2 border-gray-400 grid grid-cols-[1fr_80px_80px] font-bold text-center py-1">
+                            <div>項目</div>
+                            <div>内容・数量</div>
+                            <div>金額</div>
+                        </div>
+
+                        {/* Rows */}
+                        <div className="border-x-2 border-b-2 border-gray-400">
+                            {tableRows.map((row, i) => (
+                                <div key={i} className="grid grid-cols-[1fr_80px_80px] border-b border-gray-300 min-h-[24px] items-center">
+                                    <div className="px-2 truncate">{row.name}</div>
+                                    <div className="text-center text-xs">{row.content}</div>
+                                    <div className="text-right px-2">
+                                        {row.price !== null ? `¥${row.price.toLocaleString()}` : ''}
+                                    </div>
+                                </div>
+                            ))}
+                            {/* Remarks Row */}
+                            <div className="bg-gray-200 min-h-[24px] px-2 font-bold border-b border-gray-300 text-xs flex items-center">
+                                備考
+                            </div>
+                            <div className="min-h-[100px] bg-white"></div>
+                        </div>
+                    </div>
+
+                    {/* Totals Section */}
+                    <div className="mt-4">
+                        <h3 className="font-bold mb-1">合計金額</h3>
+                        <div className="border-2 border-gray-400 w-full">
+                            <div className="grid grid-cols-[100px_1fr] border-b border-gray-400">
+                                <div className="bg-gray-100 pl-2 py-1 font-bold text-sm flex items-center">小計</div>
+                                <div className="text-right pr-2 py-1">¥{totalCost.toLocaleString()}</div>
+                            </div>
+                            <div className="grid grid-cols-[100px_1fr] border-b border-gray-400">
+                                <div className="bg-gray-100 pl-2 py-1 font-bold text-sm flex items-center">消費税 (10%)</div>
+                                <div className="text-right pr-2 py-1">¥{Math.floor(totalCost * 0.1).toLocaleString()}</div>
+                            </div>
+                            <div className="grid grid-cols-[100px_1fr]">
+                                <div className="bg-gray-100 pl-2 py-2 font-bold text-lg flex items-center">合計金額 (税込)</div>
+                                <div className="text-right pr-2 py-2 font-bold text-xl">¥{totalWithTax.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Staff Seal */}
+                    <div className="mt-4 border border-gray-400 w-1/2 h-16 flex">
+                        <div className="w-20 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-sm">担当者印</div>
+                        <div className="flex-1"></div>
+                    </div>
+
+                </div>
             </div>
         </div>
     );

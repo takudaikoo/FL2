@@ -22,10 +22,7 @@ const PrintPreview: React.FC = () => {
             const parsed = deserializePrintData(stored);
             if (parsed) {
                 setData(parsed);
-                // Automatically trigger print after a short delay to ensure render
-                setTimeout(() => {
-                    window.print();
-                }, 800);
+                // Auto-print removed per user request
             }
         }
     }, []);

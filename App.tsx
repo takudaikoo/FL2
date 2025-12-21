@@ -4,12 +4,21 @@ import type { Plan as DBPlan, Item as DBItem, AttendeeOption as DBAttendeeOption
 import { PlanCategory, PlanId, AttendeeTier, Item, DropdownOption, Plan, AttendeeOption } from './types';
 import DetailModal from './components/DetailModal';
 import Footer from './components/Footer';
-import QuoteDocument from './components/QuoteDocument';
 import { Info, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import PrintPreview from './components/PrintPreview';
+import { serializePrintData } from './lib/serialization';
 
 const App: React.FC = () => {
+  // Check for print mode
+  const [isPrintMode, setIsPrintMode] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('print') === 'true') {
+      setIsPrintMode(true);
+    }
+  }, []);
+
   // --- State ---
   const [category, setCategory] = useState<PlanCategory>('funeral');
   const [selectedPlanId, setSelectedPlanId] = useState<PlanId>('a');
@@ -34,6 +43,9 @@ const App: React.FC = () => {
 
   // Fetch data from Supabase
   useEffect(() => {
+    // Skip fetching if in print mode (PrintPreview handles its own data loading from localStorage)
+    if (isPrintMode) return;
+
     const fetchData = async () => {
       try {
         console.log('Fetching data from Supabase...');
@@ -100,7 +112,7 @@ const App: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [isPrintMode]);
 
   // --- Handlers ---
 
@@ -207,89 +219,40 @@ const App: React.FC = () => {
     return option?.label || '';
   }, [attendeeTier, customAttendeeCount, attendeeOptions]);
 
-  // PDF Generation
-  const handleDownloadPDF = async () => {
-    console.log('PDF generation started');
-    console.log('Current plan:', currentPlan);
-
-    const element = document.getElementById('quote-document');
-    console.log('Quote document element:', element);
-
-    if (!element) {
-      alert('見積書要素が見つかりません。');
-      console.error('Element with id "quote-document" not found');
-      return;
-    }
-
+  // Unified Print/PDF Handler
+  const openPrintPage = () => {
     if (!currentPlan) {
       alert('プランが選択されていません。');
-      console.error('No plan selected');
       return;
     }
 
-    try {
-      console.log('Showing quote document...');
-      // Temporarily show the quote document
-      element.style.display = 'block';
+    // 1. Serialize State
+    const serializedData = serializePrintData(
+      currentPlan,
+      items,
+      selectedOptions,
+      selectedGrades,
+      attendeeTier,
+      customAttendeeCount,
+      freeInputValues,
+      totalCost,
+      attendeeLabel
+    );
 
-      // Wait a bit for rendering
-      await new Promise(resolve => setTimeout(resolve, 100));
+    // 2. Save to LocalStorage
+    localStorage.setItem('print_data', serializedData);
 
-      console.log('Generating canvas...');
-      // Generate canvas from HTML
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: true, // Enable logging temporarily
-        allowTaint: true,
-      });
-
-      console.log('Canvas generated:', canvas.width, 'x', canvas.height);
-
-      // Hide it again
-      element.style.display = 'none';
-
-      console.log('Converting to image...');
-      const imgData = canvas.toDataURL('image/png');
-
-      console.log('Creating PDF...');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-
-      const imgWidth = 210; // A4 width in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      console.log('Adding image to PDF...');
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-
-      const today = new Date().toLocaleDateString('ja-JP').replace(/\//g, '');
-      const fileName = `見積書_${currentPlan.name}_${today}.pdf`;
-
-      console.log('Saving PDF:', fileName);
-      pdf.save(fileName);
-
-      console.log('PDF generation completed successfully');
-    } catch (error) {
-      console.error('PDF generation error:', error);
-      if (error instanceof Error) {
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
-      }
-      alert(`PDF生成中にエラーが発生しました。\n\nエラー: ${error instanceof Error ? error.message : '不明なエラー'}\n\nコンソールで詳細を確認してください。`);
-
-      // Ensure element is hidden even on error
-      if (element) {
-        element.style.display = 'none';
-      }
-    }
-  };
-
-  // Print Handler
-  const handlePrint = () => {
-    window.print();
+    // 3. Open Print Window
+    window.open('/?print=true', '_blank');
   };
 
 
   // --- Render Helpers ---
+
+  // Early return for Print Mode
+  if (isPrintMode) {
+    return <PrintPreview />;
+  }
 
   const getThemeColor = (type: 'bg' | 'border' | 'text' | 'ring') => {
     const color = category === 'funeral' ? 'emerald' : 'purple';
@@ -661,7 +624,7 @@ const App: React.FC = () => {
         </main>
 
         {/* Footer */}
-        <Footer total={totalCost} onPrint={handlePrint} onDownloadPDF={handleDownloadPDF} />
+        <Footer total={totalCost} onPrint={openPrintPage} onDownloadPDF={openPrintPage} />
 
         {/* Detail Modal */}
         {modalItem && (
@@ -687,26 +650,6 @@ const App: React.FC = () => {
           }
         }
       `}</style>
-
-      {/* Hidden Quote Document for PDF/Print (Visible only when printing) */}
-      {currentPlan && (
-        <div
-          className="absolute top-0 print-preview-fix"
-          style={{ left: '-5000px' }}
-        >
-          <QuoteDocument
-            plan={currentPlan}
-            items={items}
-            selectedOptions={selectedOptions}
-            selectedGrades={selectedGrades}
-            attendeeTier={attendeeTier}
-            customAttendeeCount={customAttendeeCount}
-            freeInputValues={freeInputValues}
-            totalCost={totalCost}
-            attendeeLabel={attendeeLabel}
-          />
-        </div>
-      )}
     </div>
   );
 };

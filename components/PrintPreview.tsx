@@ -75,9 +75,8 @@ const PrintPreview: React.FC = () => {
             </div>
 
             <style>{`
-        @media print {
           @page {
-            size: A4;
+            size: A4 portrait;
             margin: 0;
           }
           body {

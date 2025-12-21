@@ -271,21 +271,30 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                         </div>
                     </div>
 
+                    {/* New Section Header */}
+                    <div className="mb-1 text-center font-bold border-b border-gray-400">お見積明細</div>
+
                     {/* Items Table - Fixed Height Container */}
                     <div className="flex-1 flex flex-col border-2 border-gray-400 text-sm">
                         <div className="bg-gray-200 border-b border-gray-400 flex font-bold text-center py-1 text-xs shrink-0 !print-color-adjust-exact">
                             <div className="flex-1 border-r border-gray-400">項目</div>
-                            <div className="w-[60px] border-r border-gray-400">数量</div>
-                            <div className="w-[80px]">金額</div>
+                            <div className="w-[100px]">金額</div>
                         </div>
 
                         {/* Rows Container - Flex Grow to fill space */}
                         <div className="flex-1 flex flex-col">
+                            {/* Base Plan Row (Added as requested) */}
+                            <div className="flex border-b border-gray-300 min-h-[22px] items-center text-xs">
+                                <div className="flex-1 px-1.5 truncate border-r border-gray-300 h-full flex items-center">{plan.name} 基本料金</div>
+                                <div className="w-[100px] text-right px-1.5 h-full flex items-center justify-end">
+                                    ¥{plan.cost.toLocaleString()}
+                                </div>
+                            </div>
+
                             {tableRows.map((row, i) => (
                                 <div key={i} className="flex border-b border-gray-300 min-h-[22px] items-center text-xs">
                                     <div className="flex-1 px-1.5 truncate border-r border-gray-300 h-full flex items-center">{row.name}</div>
-                                    <div className="w-[60px] text-center border-r border-gray-300 h-full flex items-center justify-center">{row.content}</div>
-                                    <div className="w-[80px] text-right px-1.5 h-full flex items-center justify-end">
+                                    <div className="w-[100px] text-right px-1.5 h-full flex items-center justify-end">
                                         {row.price !== null ? `¥${row.price.toLocaleString()}` : ''}
                                     </div>
                                 </div>

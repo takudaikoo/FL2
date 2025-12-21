@@ -287,7 +287,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="flex border-b border-gray-300 min-h-[22px] items-center text-xs">
                                 <div className="flex-1 px-1.5 truncate border-r border-gray-300 h-full flex items-center">{plan.name} 基本料金</div>
                                 <div className="w-[100px] text-right px-1.5 h-full flex items-center justify-end">
-                                    ¥{plan.cost.toLocaleString()}
+                                    ¥{plan.price.toLocaleString()}
                                 </div>
                             </div>
 

@@ -273,19 +273,19 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     {/* Items Table - Fixed Height Container */}
                     <div className="flex-1 flex flex-col border-2 border-gray-400 text-sm">
-                        <div className="bg-gray-200 border-b border-gray-400 grid grid-cols-[1fr_50px_70px] font-bold text-center py-1 text-xs shrink-0 !print-color-adjust-exact">
-                            <div>項目</div>
-                            <div>数量</div>
-                            <div>金額</div>
+                        <div className="bg-gray-200 border-b border-gray-400 flex font-bold text-center py-1 text-xs shrink-0 !print-color-adjust-exact">
+                            <div className="flex-1 border-r border-gray-400">項目</div>
+                            <div className="w-[60px] border-r border-gray-400">数量</div>
+                            <div className="w-[80px]">金額</div>
                         </div>
 
                         {/* Rows Container - Flex Grow to fill space */}
                         <div className="flex-1 flex flex-col">
                             {tableRows.map((row, i) => (
-                                <div key={i} className="grid grid-cols-[1fr_50px_70px] border-b border-gray-300 min-h-[22px] items-center text-xs">
-                                    <div className="px-1.5 truncate border-r border-gray-300 h-full flex items-center">{row.name}</div>
-                                    <div className="text-center border-r border-gray-300 h-full flex items-center justify-center">{row.content}</div>
-                                    <div className="text-right px-1.5 h-full flex items-center justify-end">
+                                <div key={i} className="flex border-b border-gray-300 min-h-[22px] items-center text-xs">
+                                    <div className="flex-1 px-1.5 truncate border-r border-gray-300 h-full flex items-center">{row.name}</div>
+                                    <div className="w-[60px] text-center border-r border-gray-300 h-full flex items-center justify-center">{row.content}</div>
+                                    <div className="w-[80px] text-right px-1.5 h-full flex items-center justify-end">
                                         {row.price !== null ? `¥${row.price.toLocaleString()}` : ''}
                                     </div>
                                 </div>

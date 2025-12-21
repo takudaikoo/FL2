@@ -121,7 +121,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
             <div className="flex gap-4 h-full items-start">
                 {/* --- Left Column: Form & Info (Approx 65mm) --- */}
-                <div className="w-[65mm] flex flex-col gap-4">
+                <div className="w-[65mm] flex flex-col gap-4 shrink-0">
 
                     {/* Customer Info Form */}
                     <div>
@@ -251,7 +251,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                 </div>
 
                 {/* --- Right Column: Estimate (Approx 110mm) --- */}
-                <div className="w-[110mm] flex flex-col h-full">
+                <div className="w-[110mm] flex flex-col h-full shrink-0">
                     {/* Header Info */}
                     <div className="flex justify-between items-end mb-4 border-b border-black pb-1">
                         <div className="text-sm">日付 （　　　　　）</div>

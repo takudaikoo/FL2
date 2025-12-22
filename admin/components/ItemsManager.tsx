@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, Item } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
+import { Item } from '../../types';
 import { Edit, Trash2, Plus, Search, ArrowUp, ArrowDown } from 'lucide-react';
 
 const ItemsManager: React.FC = () => {
@@ -420,9 +421,10 @@ const ItemsManager: React.FC = () => {
                                     </div>
                                     <p className="text-xs text-gray-400 mt-2">※各人数ランクに対応する単価を入力してください。</p>
                                 </div>
+                            )}
 
-                        {/* Detail Blocks Editor (Full Width) */}
-                            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 mt-4">
+                            {/* Detail Blocks Editor (Full Width) */}
+                            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 mt-4 md:col-span-2">
                                 <div className="flex justify-between items-center mb-3">
                                     <h4 className="font-bold text-sm text-gray-700">詳細モーダル設定 (写真・説明文)</h4>
                                     <button
@@ -514,7 +516,6 @@ const ItemsManager: React.FC = () => {
                                     )}
                                 </div>
                             </div>
-                            )}
                         </div>
 
                         <div className="flex justify-end gap-3 mt-6">

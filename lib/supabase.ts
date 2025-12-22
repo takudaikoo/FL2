@@ -31,6 +31,7 @@ export interface Item {
         D: number;
     };
     options?: DropdownOption[];
+    details?: any; // JSONB
     created_at?: string;
     updated_at?: string;
 }

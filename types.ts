@@ -28,6 +28,12 @@ export interface DropdownOption {
   allowedPlans: PlanId[];
 }
 
+export interface ItemDetail {
+  title?: string;
+  description: string;
+  imagePath?: string;
+}
+
 export interface Item {
   id: number;
   name: string;
@@ -40,6 +46,9 @@ export interface Item {
   basePrice?: number; // For checkboxes
   options?: DropdownOption[]; // For dropdowns
   tierPrices?: Record<AttendeeTier, number>; // For tier dependent items
+
+  // Extended details for modal
+  details?: ItemDetail[];
 }
 
 export interface SelectedState {

@@ -33,6 +33,7 @@ const ItemsManager: React.FC = () => {
                 allowedPlans: item.allowed_plans,
                 tierPrices: item.tier_prices,
                 options: item.options,
+                details: item.details,
             }));
 
             setItems(convertedItems);
@@ -59,6 +60,7 @@ const ItemsManager: React.FC = () => {
                 allowed_plans: editingItem.allowedPlans,
                 tier_prices: editingItem.tierPrices,
                 options: editingItem.options,
+                details: editingItem.details,
             };
 
             if (isNew) {
@@ -418,6 +420,100 @@ const ItemsManager: React.FC = () => {
                                     </div>
                                     <p className="text-xs text-gray-400 mt-2">※各人数ランクに対応する単価を入力してください。</p>
                                 </div>
+
+                        {/* Detail Blocks Editor (Full Width) */}
+                            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 mt-4">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h4 className="font-bold text-sm text-gray-700">詳細モーダル設定 (写真・説明文)</h4>
+                                    <button
+                                        onClick={() => {
+                                            const newDetail = {
+                                                description: '',
+                                                imagePath: ''
+                                            };
+                                            setEditingItem({
+                                                ...editingItem,
+                                                details: [...(editingItem.details || []), newDetail]
+                                            });
+                                        }}
+                                        className="text-xs bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700"
+                                    >
+                                        + セクション追加
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {(editingItem.details || []).map((detail, idx) => (
+                                        <div key={idx} className="bg-white p-3 rounded shadow-sm border border-gray-200">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <span className="text-xs font-bold text-gray-400">Section {idx + 1}</span>
+                                                <button
+                                                    onClick={() => {
+                                                        const newDetails = editingItem.details!.filter((_, i) => i !== idx);
+                                                        setEditingItem({ ...editingItem, details: newDetails });
+                                                    }}
+                                                    className="text-red-500 hover:bg-red-50 p-1 rounded"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 gap-3">
+                                                <div>
+                                                    <label className="text-xs text-gray-500 block mb-1">タイトル (任意)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={detail.title || ''}
+                                                        onChange={(e) => {
+                                                            const newDetails = [...(editingItem.details || [])];
+                                                            newDetails[idx] = { ...detail, title: e.target.value };
+                                                            setEditingItem({ ...editingItem, details: newDetails });
+                                                        }}
+                                                        className="w-full p-2 border rounded text-sm"
+                                                        placeholder="例: 正面からの様子"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-xs text-gray-500 block mb-1">画像パス (任意)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={detail.imagePath || ''}
+                                                        onChange={(e) => {
+                                                            const newDetails = [...(editingItem.details || [])];
+                                                            newDetails[idx] = { ...detail, imagePath: e.target.value };
+                                                            setEditingItem({ ...editingItem, details: newDetails });
+                                                        }}
+                                                        className="w-full p-2 border rounded text-sm font-mono"
+                                                        placeholder="例: /images/item_1_detail_1.jpg"
+                                                    />
+                                                    <p className="text-[10px] text-gray-400 mt-1">※画像は `public/images/` フォルダに配置し、そのパスを指定してください。</p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-xs text-gray-500 block mb-1">説明文</label>
+                                                    <textarea
+                                                        value={detail.description}
+                                                        onChange={(e) => {
+                                                            const newDetails = [...(editingItem.details || [])];
+                                                            newDetails[idx] = { ...detail, description: e.target.value };
+                                                            setEditingItem({ ...editingItem, details: newDetails });
+                                                        }}
+                                                        className="w-full p-2 border rounded text-sm h-20"
+                                                        placeholder="詳細な説明を入力してください..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {(editingItem.details || []).length === 0 && (
+                                        <div className="text-center py-4 text-gray-400 text-xs">
+                                            詳細セクションが設定されていません。<br />
+                                            (設定がない場合は、標準の「名前・説明・メイン画像」のみが表示されます)
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                             )}
                         </div>
 

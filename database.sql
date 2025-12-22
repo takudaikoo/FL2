@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS items (
   allowed_plans TEXT[] NOT NULL,
   tier_prices JSONB,
   options JSONB,
+  details JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

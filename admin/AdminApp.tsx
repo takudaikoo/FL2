@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import LoginForm from './components/LoginForm';
 import PlansManager from './components/PlansManager';
 import ItemsManager from './components/ItemsManager';
+import AttendeesManager from './components/AttendeesManager';
 import { LogOut, LayoutDashboard, List, Users } from 'lucide-react';
 
 const AdminApp: React.FC = () => {
@@ -111,16 +112,7 @@ const AdminApp: React.FC = () => {
                     )}
 
                     {activeTab === 'attendees' && (
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-6">参列人数設定</h2>
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                                <p className="text-gray-500">
-                                    参列人数オプションは現在データベース直接編集のみ対応しています。
-                                    <br />
-                                    将来的に専用UIを実装予定です。
-                                </p>
-                            </div>
-                        </div>
+                        <AttendeesManager />
                     )}
                 </div>
             </main>

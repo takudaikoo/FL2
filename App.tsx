@@ -480,7 +480,7 @@ const App: React.FC = () => {
                       </tr>
 
                       {/* 2. Checkboxes & Dropdowns & Tiers */}
-                      {items.filter(i => i.type !== 'included').map(item => (
+                      {items.filter(i => i.type !== 'included' && i.allowedPlans.includes(selectedPlanId)).map(item => (
                         // Check compatibility
                         // Note: I restored the map logic inline here because Step 236 showed brackets were preserved
                         /* logic from original file */

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Item } from '../../types';
 import { Edit, Trash2, Plus, Search, ArrowUp, ArrowDown } from 'lucide-react';
+import ItemEditor from './ItemEditor';
 
 const ItemsManager: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
@@ -46,22 +47,20 @@ const ItemsManager: React.FC = () => {
         }
     };
 
-    const handleSave = async () => {
-        if (!editingItem) return;
-
+    const handleSave = async (savedItem: Item) => {
         try {
             // Convert camelCase back to snake_case for DB
             const dbItem = {
-                id: editingItem.id,
-                name: editingItem.name,
-                description: editingItem.description,
-                display_order: editingItem.displayOrder,
-                type: editingItem.type,
-                base_price: editingItem.basePrice || 0,
-                allowed_plans: editingItem.allowedPlans,
-                tier_prices: editingItem.tierPrices,
-                options: editingItem.options,
-                details: editingItem.details,
+                id: savedItem.id,
+                name: savedItem.name,
+                description: savedItem.description,
+                display_order: savedItem.displayOrder,
+                type: savedItem.type,
+                base_price: savedItem.basePrice || 0,
+                allowed_plans: savedItem.allowedPlans,
+                tier_prices: savedItem.tierPrices,
+                options: savedItem.options,
+                details: savedItem.details,
             };
 
             if (isNew) {
@@ -73,7 +72,7 @@ const ItemsManager: React.FC = () => {
                 const { error } = await supabase
                     .from('items')
                     .update(dbItem)
-                    .eq('id', editingItem.id);
+                    .eq('id', savedItem.id);
                 if (error) throw error;
             }
 
@@ -152,6 +151,9 @@ const ItemsManager: React.FC = () => {
             type: 'checkbox',
             basePrice: 0,
             allowedPlans: ['a', 'b', 'c', 'd'],
+            options: [], // Initialize options
+            details: [], // Initialize details
+            tierPrices: { A: 0, B: 0, C: 0, D: 0 } // Initialize tierPrices
         });
         setIsNew(true);
     };
@@ -163,6 +165,19 @@ const ItemsManager: React.FC = () => {
 
     if (loading) return <div className="p-4">読み込み中...</div>;
 
+    // Show Editor if editing
+    if (editingItem) {
+        return (
+            <ItemEditor
+                item={editingItem}
+                isNew={isNew}
+                onSave={handleSave}
+                onCancel={() => setEditingItem(null)}
+            />
+        );
+    }
+
+    // Show List
     return (
         <div>
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -188,358 +203,6 @@ const ItemsManager: React.FC = () => {
                     </button>
                 </div>
             </div>
-
-            {editingItem && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-                        <div className="p-6 border-b shrink-0">
-                            <h3 className="text-xl font-bold">
-                                {isNew ? '新規アイテム作成' : 'アイテム編集'}
-                            </h3>
-                        </div>
-
-                        <div className="p-6 overflow-y-auto flex-1 min-h-0">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                                    <input
-                                        type="number"
-                                        value={editingItem.id}
-                                        onChange={e => setEditingItem({ ...editingItem, id: parseInt(e.target.value) || 0 })}
-                                        disabled={!isNew}
-                                        className="w-full p-2 border rounded bg-gray-50 disabled:text-gray-500"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">タイプ</label>
-                                    <select
-                                        value={editingItem.type}
-                                        onChange={e => setEditingItem({ ...editingItem, type: e.target.value as any })}
-                                        className="w-full p-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none"
-                                    >
-                                        <option value="included">プランに含まれる (included)</option>
-                                        <option value="checkbox">チェックボックス (checkbox)</option>
-                                        <option value="dropdown">ドロップダウン (dropdown)</option>
-                                        <option value="tier_dependent">人数帯連動 (tier_dependent)</option>
-                                        <option value="free_input">自由入力 (free_input)</option>
-                                    </select>
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">アイテム名</label>
-                                    <input
-                                        type="text"
-                                        value={editingItem.name}
-                                        onChange={e => setEditingItem({ ...editingItem, name: e.target.value })}
-                                        className="w-full p-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none"
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">説明</label>
-                                    <textarea
-                                        value={editingItem.description}
-                                        onChange={e => setEditingItem({ ...editingItem, description: e.target.value })}
-                                        className="w-full p-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none h-20"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">表示順</label>
-                                    <input
-                                        type="number"
-                                        value={editingItem.displayOrder}
-                                        onChange={e => setEditingItem({ ...editingItem, displayOrder: parseInt(e.target.value) || 0 })}
-                                        className="w-full p-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none"
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">利用可能プラン</label>
-                                    <div className="flex gap-4 p-2 border rounded bg-gray-50">
-                                        {['a', 'b', 'c', 'd'].map(planId => (
-                                            <label key={planId} className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={editingItem.allowedPlans.includes(planId)}
-                                                    onChange={e => {
-                                                        const newPlans = e.target.checked
-                                                            ? [...editingItem.allowedPlans, planId]
-                                                            : editingItem.allowedPlans.filter(p => p !== planId);
-                                                        setEditingItem({ ...editingItem, allowedPlans: newPlans });
-                                                    }}
-                                                    className="rounded text-emerald-600 focus:ring-emerald-500"
-                                                />
-                                                <span className="uppercase">{planId}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {(editingItem.type === 'checkbox' || editingItem.type === 'free_input') && (
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            {editingItem.type === 'free_input' ? '初期表示額 (任意)' : '基本価格'}
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={editingItem.basePrice || 0}
-                                            onChange={e => setEditingItem({ ...editingItem, basePrice: parseInt(e.target.value) || 0 })}
-                                            className="w-full p-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none"
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Free Input Description */}
-                                {editingItem.type === 'free_input' && (
-                                    <div className="md:col-span-2 text-sm text-gray-500 bg-blue-50 p-2 rounded border border-blue-100">
-                                        ℹ️ この項目は、ユーザーが画面上で「金額」を自由に入力できる項目として表示されます。<br />
-                                        プラスの金額（追加費用）だけでなく、マイナスの値（値引き）も入力可能です。
-                                    </div>
-                                )}
-
-                                {/* Dropdown Options Editor */}
-                                {editingItem.type === 'dropdown' && (
-                                    <div className="md:col-span-2 border border-gray-200 rounded-lg p-4 bg-gray-50">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <h4 className="font-bold text-sm text-gray-700">選択肢設定</h4>
-                                            <button
-                                                onClick={() => {
-                                                    const newOpt = {
-                                                        id: Math.random().toString(36).substr(2, 9),
-                                                        name: '新規オプション',
-                                                        price: 0,
-                                                        allowedPlans: ['a', 'b', 'c', 'd']
-                                                    };
-                                                    setEditingItem({
-                                                        ...editingItem,
-                                                        options: [...(editingItem.options || []), newOpt]
-                                                    });
-                                                }}
-                                                className="text-xs bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700"
-                                            >
-                                                + 追加
-                                            </button>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            {(editingItem.options || []).map((opt, idx) => (
-                                                <div key={opt.id || idx} className="bg-white p-3 rounded shadow-sm border border-gray-200">
-                                                    <div className="flex gap-2 mb-2">
-                                                        <div className="flex-1">
-                                                            <label className="text-xs text-gray-500 block">選択肢名</label>
-                                                            <input
-                                                                type="text"
-                                                                value={opt.name}
-                                                                onChange={(e) => {
-                                                                    const newOptions = [...(editingItem.options || [])];
-                                                                    newOptions[idx] = { ...opt, name: e.target.value };
-                                                                    setEditingItem({ ...editingItem, options: newOptions });
-                                                                }}
-                                                                className="w-full p-1 border rounded text-sm"
-                                                            />
-                                                        </div>
-                                                        <div className="w-32">
-                                                            <label className="text-xs text-gray-500 block">価格</label>
-                                                            <input
-                                                                type="number"
-                                                                value={opt.price}
-                                                                onChange={(e) => {
-                                                                    const newOptions = [...(editingItem.options || [])];
-                                                                    newOptions[idx] = { ...opt, price: parseInt(e.target.value) || 0 };
-                                                                    setEditingItem({ ...editingItem, options: newOptions });
-                                                                }}
-                                                                className="w-full p-1 border rounded text-sm"
-                                                            />
-                                                        </div>
-                                                        <div className="flex items-end">
-                                                            <button
-                                                                onClick={() => {
-                                                                    const newOptions = editingItem.options!.filter((_, i) => i !== idx);
-                                                                    setEditingItem({ ...editingItem, options: newOptions });
-                                                                }}
-                                                                className="text-red-500 hover:bg-red-50 p-1 rounded"
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    {/* Allowed Plans for Option */}
-                                                    <div>
-                                                        <label className="text-xs text-gray-500 block mb-1">対象プラン</label>
-                                                        <div className="flex gap-2">
-                                                            {['a', 'b', 'c', 'd'].map(pId => (
-                                                                <label key={pId} className="flex items-center gap-1 text-xs cursor-pointer">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={(opt.allowedPlans || []).includes(pId)}
-                                                                        onChange={(e) => {
-                                                                            const currentPlans = opt.allowedPlans || [];
-                                                                            const newPlans = e.target.checked
-                                                                                ? [...currentPlans, pId]
-                                                                                : currentPlans.filter(p => p !== pId);
-
-                                                                            const newOptions = [...(editingItem.options || [])];
-                                                                            newOptions[idx] = { ...opt, allowedPlans: newPlans as any[] };
-                                                                            setEditingItem({ ...editingItem, options: newOptions });
-                                                                        }}
-                                                                        className="rounded text-emerald-600 focus:ring-emerald-500 w-3 h-3"
-                                                                    />
-                                                                    <span className="uppercase">{pId}</span>
-                                                                </label>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {(editingItem.options || []).length === 0 && (
-                                                <p className="text-xs text-gray-400 text-center py-2">選択肢がありません。追加してください。</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Tier Price Editor */}
-                                {editingItem.type === 'tier_dependent' && (
-                                    <div className="md:col-span-2 border border-gray-200 rounded-lg p-4 bg-gray-50">
-                                        <h4 className="font-bold text-sm text-gray-700 mb-3">人数帯別価格設定</h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                            {['A', 'B', 'C', 'D'].map(tier => (
-                                                <div key={tier}>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1">ランク {tier}</label>
-                                                    <input
-                                                        type="number"
-                                                        value={editingItem.tierPrices?.[tier as 'A' | 'B' | 'C' | 'D'] || 0}
-                                                        onChange={(e) => {
-                                                            const newPrices = { ...(editingItem.tierPrices || { A: 0, B: 0, C: 0, D: 0 }) };
-                                                            // @ts-ignore
-                                                            newPrices[tier] = parseInt(e.target.value) || 0;
-                                                            setEditingItem({ ...editingItem, tierPrices: newPrices });
-                                                        }}
-                                                        className="w-full p-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <p className="text-xs text-gray-400 mt-2">※各人数ランクに対応する単価を入力してください。</p>
-                                    </div>
-                                )}
-
-                                {/* Detail Blocks Editor (Full Width) */}
-                                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 mt-4 md:col-span-2">
-                                    <div className="flex justify-between items-center mb-3">
-                                        <h4 className="font-bold text-sm text-gray-700">詳細モーダル設定 (写真・説明文)</h4>
-                                        <button
-                                            onClick={() => {
-                                                const newDetail = {
-                                                    description: '',
-                                                    imagePath: ''
-                                                };
-                                                setEditingItem({
-                                                    ...editingItem,
-                                                    details: [...(editingItem.details || []), newDetail]
-                                                });
-                                            }}
-                                            className="text-xs bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700"
-                                        >
-                                            + セクション追加
-                                        </button>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        {(editingItem.details || []).map((detail, idx) => (
-                                            <div key={idx} className="bg-white p-3 rounded shadow-sm border border-gray-200">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <span className="text-xs font-bold text-gray-400">Section {idx + 1}</span>
-                                                    <button
-                                                        onClick={() => {
-                                                            const newDetails = editingItem.details!.filter((_, i) => i !== idx);
-                                                            setEditingItem({ ...editingItem, details: newDetails });
-                                                        }}
-                                                        className="text-red-500 hover:bg-red-50 p-1 rounded"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 gap-3">
-                                                    <div>
-                                                        <label className="text-xs text-gray-500 block mb-1">タイトル (任意)</label>
-                                                        <input
-                                                            type="text"
-                                                            value={detail.title || ''}
-                                                            onChange={(e) => {
-                                                                const newDetails = [...(editingItem.details || [])];
-                                                                newDetails[idx] = { ...detail, title: e.target.value };
-                                                                setEditingItem({ ...editingItem, details: newDetails });
-                                                            }}
-                                                            className="w-full p-2 border rounded text-sm"
-                                                            placeholder="例: 正面からの様子"
-                                                        />
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="text-xs text-gray-500 block mb-1">画像パス (任意)</label>
-                                                        <input
-                                                            type="text"
-                                                            value={detail.imagePath || ''}
-                                                            onChange={(e) => {
-                                                                const newDetails = [...(editingItem.details || [])];
-                                                                newDetails[idx] = { ...detail, imagePath: e.target.value };
-                                                                setEditingItem({ ...editingItem, details: newDetails });
-                                                            }}
-                                                            className="w-full p-2 border rounded text-sm font-mono"
-                                                            placeholder="例: /images/item_1_detail_1.jpg"
-                                                        />
-                                                        <p className="text-[10px] text-gray-400 mt-1">※画像は `public/images/` フォルダに配置し、そのパスを指定してください。</p>
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="text-xs text-gray-500 block mb-1">説明文</label>
-                                                        <textarea
-                                                            value={detail.description}
-                                                            onChange={(e) => {
-                                                                const newDetails = [...(editingItem.details || [])];
-                                                                newDetails[idx] = { ...detail, description: e.target.value };
-                                                                setEditingItem({ ...editingItem, details: newDetails });
-                                                            }}
-                                                            className="w-full p-2 border rounded text-sm h-20"
-                                                            placeholder="詳細な説明を入力してください..."
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        {(editingItem.details || []).length === 0 && (
-                                            <div className="text-center py-4 text-gray-400 text-xs">
-                                                詳細セクションが設定されていません。<br />
-                                                (設定がない場合は、標準の「名前・説明・メイン画像」のみが表示されます)
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div className="p-6 border-t bg-gray-50 flex justify-end gap-3 shrink-0 rounded-b-xl">
-                            <button
-                                onClick={() => setEditingItem(null)}
-                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-                            >
-                                キャンセル
-                            </button>
-                            <button
-                                onClick={handleSave}
-                                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
-                            >
-                                保存する
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200">
@@ -624,7 +287,7 @@ const ItemsManager: React.FC = () => {
                     </tbody>
                 </table>
             </div>
-        </div >
+        </div>
     );
 };
 

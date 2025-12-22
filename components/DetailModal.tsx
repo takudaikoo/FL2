@@ -82,7 +82,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ item, selectedGrade, onClose 
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 min-h-0">
           <h3 className="text-xl font-bold text-gray-800 mb-2">{item.name}</h3>
           <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
             {item.description}

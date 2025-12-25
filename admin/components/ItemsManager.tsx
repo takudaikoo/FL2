@@ -36,6 +36,7 @@ const ItemsManager: React.FC = () => {
                 tierPrices: item.tier_prices,
                 options: item.options,
                 details: item.details,
+                useDropdown: item.use_dropdown,
             }));
 
             setItems(convertedItems);
@@ -61,7 +62,10 @@ const ItemsManager: React.FC = () => {
                 tier_prices: savedItem.tierPrices,
                 options: savedItem.options,
                 details: savedItem.details,
+                use_dropdown: savedItem.useDropdown,
             };
+
+            console.log('Saving item to DB:', dbItem);
 
             if (isNew) {
                 const { error } = await supabase

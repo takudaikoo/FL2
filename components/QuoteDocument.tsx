@@ -88,6 +88,13 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
             return '-';
         }
         if (item.type === 'included') {
+            if (item.useDropdown) {
+                const gradeId = selectedGrades.get(item.id);
+                if (gradeId && item.options) {
+                    const option = item.options.find(o => o.id === gradeId);
+                    return option?.name || '-';
+                }
+            }
             return '-';
         }
         return '-';

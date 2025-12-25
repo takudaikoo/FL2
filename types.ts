@@ -49,6 +49,9 @@ export interface Item {
 
   // Extended details for modal
   details?: ItemDetail[];
+
+  // New flag for included items to use dropdown
+  useDropdown?: boolean;
 }
 
 export interface SelectedState {

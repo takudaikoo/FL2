@@ -97,6 +97,7 @@ const App: React.FC = () => {
           allowedPlans: item.allowed_plans,
           tierPrices: item.tier_prices,
           options: item.options,
+          useDropdown: item.use_dropdown, // Map from DB snake_case
         }));
 
         setPlans(plansData as Plan[]);
@@ -462,9 +463,27 @@ const App: React.FC = () => {
                                   </button>
                                 </td>
                                 <td className="p-3 pr-4 text-center">
-                                  <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600">
-                                    <Check size={14} />
-                                  </div>
+                                  {item.useDropdown && item.options ? (
+                                    <select
+                                      className="w-full text-xs p-1 border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500"
+                                      value={selectedGrades.get(item.id) || ''}
+                                      onClick={(e) => e.stopPropagation()}
+                                      onChange={(e) => {
+                                        setGrade(item.id, e.target.value);
+                                      }}
+                                    >
+                                      <option value="">選択してください</option>
+                                      {item.options.filter(o => o.allowedPlans.includes(selectedPlanId)).map(opt => (
+                                        <option key={opt.id} value={opt.id}>
+                                          {opt.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  ) : (
+                                    <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600">
+                                      <Check size={14} />
+                                    </div>
+                                  )}
                                 </td>
                               </tr>
                             ))}

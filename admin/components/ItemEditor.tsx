@@ -110,6 +110,26 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                             </select>
                         </div>
 
+                        {editingItem.type === 'included' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    追加設定
+                                </label>
+                                <label className="flex items-center gap-2 p-2 border rounded-lg bg-white cursor-pointer hover:bg-gray-50">
+                                    <input
+                                        type="checkbox"
+                                        checked={editingItem.useDropdown || false}
+                                        onChange={e => setEditingItem({ ...editingItem, useDropdown: e.target.checked })}
+                                        className="accent-emerald-600 w-5 h-5 rounded"
+                                    />
+                                    <span className="text-gray-700 font-medium">ドロップダウン選択を使用する</span>
+                                </label>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    ※「プランに含まれる」アイテムで、ユーザーに選択肢（色や種類など）を選ばせる場合に有効にします。追加料金は発生しません。
+                                </p>
+                            </div>
+                        )}
+
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1">アイテム名</label>
                             <input
@@ -198,7 +218,7 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                             </div>
                         )}
 
-                        {editingItem.type === 'dropdown' && (
+                        {(editingItem.type === 'dropdown' || (editingItem.type === 'included' && editingItem.useDropdown)) && (
                             <div className="border border-gray-200 rounded-lg overflow-hidden">
                                 <div className="bg-gray-50 p-3 border-b border-gray-200 flex justify-between items-center">
                                     <label className="font-bold text-gray-700">選択肢設定</label>

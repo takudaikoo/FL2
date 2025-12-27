@@ -464,21 +464,26 @@ const App: React.FC = () => {
                                 </td>
                                 <td className="p-3 pr-4 text-center">
                                   {item.useDropdown && item.options ? (
-                                    <select
-                                      className="w-full text-xs p-1 border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500"
-                                      value={selectedGrades.get(item.id) || ''}
-                                      onClick={(e) => e.stopPropagation()}
-                                      onChange={(e) => {
-                                        setGrade(item.id, e.target.value);
-                                      }}
-                                    >
-                                      <option value="">選択してください</option>
-                                      {item.options.filter(o => o.allowedPlans.includes(selectedPlanId)).map(opt => (
-                                        <option key={opt.id} value={opt.id}>
-                                          {opt.name}
-                                        </option>
-                                      ))}
-                                    </select>
+                                    <div className="relative">
+                                      <select
+                                        className="w-full text-sm p-2.5 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm cursor-pointer appearance-none transition-all hover:border-emerald-400"
+                                        value={selectedGrades.get(item.id) || ''}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={(e) => {
+                                          setGrade(item.id, e.target.value);
+                                        }}
+                                      >
+                                        <option value="">選択してください</option>
+                                        {item.options.filter(o => o.allowedPlans.includes(selectedPlanId)).map(opt => (
+                                          <option key={opt.id} value={opt.id}>
+                                            {opt.name}
+                                          </option>
+                                        ))}
+                                      </select>
+                                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                        <ChevronDown size={14} />
+                                      </div>
+                                    </div>
                                   ) : (
                                     <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600">
                                       <Check size={14} />
@@ -573,18 +578,23 @@ const App: React.FC = () => {
                                 )}
 
                                 {item.type === 'dropdown' && isAllowed && item.options && (
-                                  <select
-                                    className="w-full text-xs p-1 border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500"
-                                    value={dropdownValue || ''}
-                                    onChange={(e) => setGrade(item.id, e.target.value)}
-                                  >
-                                    <option value="">選択なし</option>
-                                    {item.options.filter(o => o.allowedPlans.includes(selectedPlanId)).map(opt => (
-                                      <option key={opt.id} value={opt.id}>
-                                        {opt.name}
-                                      </option>
-                                    ))}
-                                  </select>
+                                  <div className="relative min-w-[140px]">
+                                    <select
+                                      className="w-full text-sm p-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm cursor-pointer appearance-none transition-all hover:border-emerald-400"
+                                      value={dropdownValue || ''}
+                                      onChange={(e) => setGrade(item.id, e.target.value)}
+                                    >
+                                      <option value="">選択なし</option>
+                                      {item.options.filter(o => o.allowedPlans.includes(selectedPlanId)).map(opt => (
+                                        <option key={opt.id} value={opt.id}>
+                                          {opt.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                      <ChevronDown size={14} />
+                                    </div>
+                                  </div>
                                 )}
 
                                 {/* Tier Dependent: Checkbox + (Tier D only) Unit Price Hint */}

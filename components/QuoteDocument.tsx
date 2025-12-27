@@ -168,12 +168,21 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="bg-gray-200 border-b border-gray-400 h-6 flex items-center px-2 text-xs font-bold">申込者情報</div>
 
                             {/* Rep/Relation */}
+                            {/* Rep/Relation - Modified for more space */}
                             <div className="flex border-b border-gray-400 h-10">
                                 <div className="w-20 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs shrink-0">代表者氏名</div>
                                 <div className="flex-1 flex">
                                     <div className="flex-1 bg-blue-50/20 border-r border-gray-400"></div>
                                     <div className="w-10 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs shrink-0">続柄</div>
-                                    <div className="w-14 bg-blue-50/20 shrink-0"></div>
+                                    <div className="w-20 bg-blue-50/20 shrink-0"></div>
+                                </div>
+                            </div>
+
+                            {/* Applicant Birth Date - Added */}
+                            <div className="flex border-b border-gray-400 h-10">
+                                <div className="w-20 bg-gray-100 border-r border-gray-400 flex items-center justify-center font-bold text-xs shrink-0">生年月日</div>
+                                <div className="flex-1 flex items-center justify-end px-2 text-sm bg-blue-50/20">
+                                    年　　月　　日
                                 </div>
                             </div>
                             {/* Chief Mourner */}
@@ -291,7 +300,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                         {/* Rows Container - Flex Grow to fill space */}
                         <div className="flex-1 flex flex-col">
                             {/* Base Plan Row (Added as requested) */}
-                            <div className="flex border-b border-gray-300 min-h-[22px] items-center text-xs">
+                            <div className="flex border-b border-gray-300 min-h-[28px] items-center text-xs">
                                 <div className="flex-1 px-1.5 truncate border-r border-gray-300 h-full flex items-center">{plan.name} 基本料金</div>
                                 <div className="w-[100px] text-right px-1.5 h-full flex items-center justify-end">
                                     ¥{plan.price.toLocaleString()}
@@ -299,7 +308,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             </div>
 
                             {tableRows.map((row, i) => (
-                                <div key={i} className="flex border-b border-gray-300 min-h-[22px] items-center text-xs">
+                                <div key={i} className="flex border-b border-gray-300 min-h-[28px] items-center text-xs">
                                     <div className="flex-1 px-1.5 truncate border-r border-gray-300 h-full flex items-center">{row.name}</div>
                                     <div className="w-[100px] text-right px-1.5 h-full flex items-center justify-end">
                                         {row.price !== null ? `¥${row.price.toLocaleString()}` : ''}

@@ -374,12 +374,15 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                         </div>
                         <div className="flex border-b border-gray-300">
                             <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 !print-color-adjust-exact">選択されたプラン</div>
-                            <div className="flex-1 py-1 px-2 font-bold">{plan.name}</div>
+                            <div className="flex-1 py-1 px-2 font-bold flex items-center">
+                                <span className="flex-1 text-center">{plan.name}</span>
+                                <span className="font-mono">¥{plan.price.toLocaleString()}</span>
+                            </div>
                         </div>
                         {attendeeLabel && attendeeLabel !== '-' && (
                             <div className="flex border-b border-gray-300">
                                 <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 !print-color-adjust-exact">参列人数</div>
-                                <div className="flex-1 py-1 px-2">{attendeeLabel}</div>
+                                <div className="flex-1 py-1 px-2 text-center">{attendeeLabel}</div>
                             </div>
                         )}
                     </div>
@@ -401,16 +404,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                         {/* Rows Container - Flex Grow to fill space */}
                         <div className="flex-1 flex flex-col bg-white">
-                            {/* Base Plan Row (Always show) */}
-                            <div className="flex border-b border-gray-200 min-h-[30px] items-center text-xs hover:bg-gray-50">
-                                <div className="flex-1 px-3 truncate border-r border-gray-200 h-full flex items-center font-bold text-gray-800">
-                                    基本料金
-                                </div>
-                                <div className="w-[120px] text-right px-3 h-full flex items-center justify-end font-medium">
-                                    ¥{plan.price.toLocaleString()}
-                                </div>
-                            </div>
-
+                            {/* Base Plan Row Removed as per request */}
                             {tableRows.map((row, i) => {
                                 // Filter out empty rows unless they are placeholder used to fill space? 
                                 // Actually checking logic above, we need to FILTER items first before mapping to rows. 

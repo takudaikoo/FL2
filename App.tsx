@@ -385,9 +385,8 @@ const App: React.FC = () => {
                 className="h-8 w-auto object-contain"
               />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800 tracking-wide">
-              {logoType === 'FL' ? 'First Leaf' : 'Last Stone'}
-              <span className="text-sm font-normal text-gray-500 ml-2">葬儀プランお見積り</span>
+            <h1 className="text-xl font-bold text-gray-800 tracking-wide">
+              葬儀プランお見積り
             </h1>
           </div>
         </header>

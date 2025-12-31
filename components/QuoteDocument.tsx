@@ -374,11 +374,11 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             </div>
 
                             {tableRows.map((row, i) => (
-                                <div key={i} className="flex border-b border-gray-200 min-h-[30px] items-center text-xs relative">
-                                    <div className="flex-1 px-3 border-r border-gray-200 h-full flex items-center">
-                                        <span className="truncate w-full block">{row.name}</span>
+                                <div key={i} className="flex border-b border-gray-200 min-h-[30px] items-center text-xs">
+                                    <div className="flex-1 px-3 border-r border-gray-200 h-full flex items-center justify-between overflow-hidden">
+                                        <span className="truncate mr-2">{row.name}</span>
                                         {row.content && row.content !== '-' && (
-                                            <span className="text-[10px] text-gray-500 ml-2 bg-gray-100 px-1 rounded absolute right-[130px]">{row.content}</span>
+                                            <span className="text-[10px] text-gray-500 bg-gray-100 px-1 rounded shrink-0">{row.content}</span>
                                         )}
                                     </div>
                                     <div className="w-[120px] text-right px-3 h-full flex items-center justify-end font-mono text-gray-700">

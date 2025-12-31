@@ -217,7 +217,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             </div>
 
                             {/* Applicant Info Header */}
-                            <div className="bg-gray-200 border-b border-gray-400 h-6 flex items-center px-2 text-xs font-bold !print-color-adjust-exact">
+                            <div className="bg-gray-200 border-b border-gray-400 h-6 flex items-center px-2 text-sm font-bold !print-color-adjust-exact">
                                 申込者情報
                             </div>
 
@@ -278,7 +278,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             </div>
 
                             {/* Others Header */}
-                            <div className="bg-gray-200 border-b border-gray-400 h-6 flex items-center px-2 text-xs font-bold !print-color-adjust-exact">
+                            <div className="bg-gray-200 border-b border-gray-400 h-6 flex items-center px-2 text-sm font-bold !print-color-adjust-exact">
                                 その他
                             </div>
 
@@ -394,7 +394,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     {/* Items Table - Fixed Height Container */}
                     <div className="flex-1 flex flex-col border-x border-b border-gray-400 text-sm">
-                        <div className="bg-gray-100 border-b border-gray-400 flex font-bold text-center py-1.5 text-xs shrink-0 !print-color-adjust-exact">
+                        <div className="bg-gray-100 border-b border-gray-400 flex font-bold text-center py-1.5 text-sm shrink-0 !print-color-adjust-exact">
                             <div className="flex-1 px-2 border-r border-gray-300">内訳 / 項目名</div>
                             <div className="w-[120px] px-2">金額 (税抜)</div>
                         </div>
@@ -437,7 +437,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                         {/* Remarks */}
                         <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
-                            <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-xs py-1 !print-color-adjust-exact">
+                            <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
                                 備考
                             </div>
                             <div className="h-[80px] bg-white p-2 text-xs text-gray-600">

@@ -164,7 +164,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     {/* Customer Info Form */}
                     <div>
-                        <h2 className="text-lg font-bold mb-1.5 border-l-4 border-emerald-600 pl-2">顧客情報記入欄</h2>
+                        <h2 className="text-lg font-bold mb-1.5 bg-gray-700 text-white py-1 px-2 text-center rounded-sm !print-color-adjust-exact">顧客情報記入欄</h2>
                         <div className="border border-black text-sm rounded-sm overflow-hidden">
                             {/* Date Field */}
                             <div className="flex border-b border-gray-400 h-10">
@@ -356,7 +356,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     {/* Basic Plan Section */}
                     <div className="mb-4 text-xs">
-                        <div className="font-bold bg-gray-300 text-black text-center py-1 px-2 mb-1 !print-color-adjust-exact">基本プラン</div>
+                        <div className="font-bold bg-gray-700 text-white text-center py-1 px-2 mb-1 !print-color-adjust-exact">基本プラン</div>
                         <div className="flex border-b border-gray-300">
                             <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 !print-color-adjust-exact">選択されたプラン</div>
                             <div className="flex-1 py-1 px-2 font-bold">{plan.name}</div>
@@ -370,7 +370,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     </div>
 
                     {/* Options Section Header */}
-                    <div className="mb-0 text-center font-bold bg-gray-300 text-black py-1 rounded-t-sm !print-color-adjust-exact">オプション</div>
+                    <div className="mb-0 text-center font-bold bg-gray-700 text-white py-1 rounded-t-sm !print-color-adjust-exact">オプション</div>
 
                     {/* Items Table - Fixed Height Container */}
                     <div className="flex-1 flex flex-col border-x border-b border-gray-400 text-sm">

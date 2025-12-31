@@ -386,7 +386,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     {/* Options Section Header */}
                     <div
-                        className="mb-0 text-center font-bold py-1 rounded-t-sm !print-color-adjust-exact"
+                        className="mb-0 text-center font-bold text-sm py-1 rounded-t-sm !print-color-adjust-exact"
                         style={{ backgroundColor: '#374151', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
                     >
                         オプション

@@ -179,15 +179,15 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
             }}
         >
             {/* Header Title */}
-            {/* Header Title */}
-            <div className="flex justify-between items-end border-b-2 border-black pb-2 mb-6">
-                <h1 className="text-3xl font-bold tracking-wider">御葬儀見積書兼申込書</h1>
-                <div className="text-sm font-medium mb-1">作成日: {formattedDate}</div>
-            </div>
+            {/* Header Title Removed - Moved Layout Below */}
 
             <div className="grid grid-cols-2 gap-8 h-full items-start">
                 {/* --- Left Column: Form & Info --- */}
                 <div className="flex flex-col gap-5">
+                    {/* Title moved here to align with company name */}
+                    <div className="mt-8 mb-8">
+                        <h1 className="text-3xl font-bold tracking-wider border-b-2 border-black pb-2 inline-block">御葬儀見積書兼申込書</h1>
+                    </div>
 
                     {/* Customer Info Form */}
                     <div>
@@ -362,12 +362,12 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                 {/* --- Right Column: Estimate --- */}
                 <div className="flex flex-col h-full">
-                    {/* Header Info */}
-                    <div className="flex justify-between items-end mb-4 border-b-2 border-black pb-2">
-                        <div className="text-base">発行日: {formattedDate}</div>
-                        {/* No. removed from here */}
+                    {/* Issue Date */}
+                    <div className="flex justify-end mb-2">
+                        <div className="text-sm font-medium">発行日: {formattedDate}</div>
                     </div>
 
+                    {/* Company Info */}
                     <div className="flex mb-4 items-start">
                         {/* Logo */}
                         <div className="w-12 h-12 mr-4 flex items-center justify-center shrink-0 !print-color-adjust-exact">

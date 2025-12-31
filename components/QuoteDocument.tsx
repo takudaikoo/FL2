@@ -318,7 +318,12 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     {/* Disclaimer / Notes - Moved up since plan box is removed */}
                     <div className="mt-auto border-t border-gray-300">
-                        <div className="bg-gray-200 px-2 py-1 text-xs font-bold mb-1 !print-color-adjust-exact">注意事項</div>
+                        <div
+                            className="px-2 py-1 text-sm font-bold mb-1 text-center rounded-sm !print-color-adjust-exact"
+                            style={{ backgroundColor: '#374151', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+                        >
+                            注意事項
+                        </div>
                         <div className="px-1 py-1 text-[7pt] text-gray-500 leading-tight text-justify">
                             <p className="mb-1">※個人情報の取扱いについて: ご提供いただいたお客様の個人情報は、葬儀の施行、請求業務、および関連サービスのご案内のみに利用し、法令に基づく場合を除き、第三者への提供は行いません。</p>
                             <p className="mb-1">※お支払期限: 請求書発行後、原則として7日以内にお振込みをお願いいたします。</p>
@@ -362,7 +367,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     {/* Basic Plan Section */}
                     <div className="mb-4 text-xs">
                         <div
-                            className="font-bold text-center py-1 px-2 mb-1 !print-color-adjust-exact"
+                            className="font-bold text-center text-sm py-1 px-2 mb-1 !print-color-adjust-exact"
                             style={{ backgroundColor: '#374151', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
                         >
                             基本プラン

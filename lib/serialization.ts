@@ -10,7 +10,11 @@ export interface PrintData {
     freeInputValues: [number, number][]; // serialized Map
     totalCost: number;
     attendeeLabel: string;
+    customerInfo?: any; // strict typing later if needed, avoiding circular imports annoyance for now or just import types
+    estimateId?: number;
 }
+
+
 
 export const serializePrintData = (
     plan: Plan,
@@ -21,7 +25,9 @@ export const serializePrintData = (
     customAttendeeCount: string,
     freeInputValues: Map<number, number>,
     totalCost: number,
-    attendeeLabel: string
+    attendeeLabel: string,
+    customerInfo?: any,
+    estimateId?: number
 ): string => {
     const data: PrintData = {
         plan,
@@ -33,6 +39,8 @@ export const serializePrintData = (
         freeInputValues: Array.from(freeInputValues.entries()),
         totalCost,
         attendeeLabel,
+        customerInfo,
+        estimateId,
     };
     return JSON.stringify(data);
 };
@@ -47,6 +55,8 @@ export const deserializePrintData = (json: string): {
     freeInputValues: Map<number, number>;
     totalCost: number;
     attendeeLabel: string;
+    customerInfo?: any;
+    estimateId?: number;
 } | null => {
     try {
         const data: PrintData = JSON.parse(json);
@@ -60,6 +70,8 @@ export const deserializePrintData = (json: string): {
             freeInputValues: new Map(data.freeInputValues),
             totalCost: data.totalCost,
             attendeeLabel: data.attendeeLabel,
+            customerInfo: data.customerInfo,
+            estimateId: data.estimateId,
         };
     } catch (e) {
         console.error('Failed to parse print data:', e);

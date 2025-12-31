@@ -6,6 +6,8 @@ import DetailModal from './components/DetailModal';
 import Footer from './components/Footer';
 import { Info, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import PrintPreview from './components/PrintPreview';
+import CustomerInputModal from './components/CustomerInputModal';
+import { CustomerInfo } from './types';
 import { serializePrintData } from './lib/serialization';
 
 const App: React.FC = () => {
@@ -33,6 +35,8 @@ const App: React.FC = () => {
   // Modal state
   const [modalItem, setModalItem] = useState<Item | null>(null);
   const [isIncludedOpen, setIsIncludedOpen] = useState(false);
+  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Supabase data
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -221,30 +225,79 @@ const App: React.FC = () => {
   }, [attendeeTier, customAttendeeCount, attendeeOptions]);
 
   // Unified Print/PDF Handler
-  const openPrintPage = () => {
+  const openInputModal = () => {
     if (!currentPlan) {
       alert('プランが選択されていません。');
       return;
     }
+    setIsInputModalOpen(true);
+  };
 
-    // 1. Serialize State
-    const serializedData = serializePrintData(
-      currentPlan,
-      items,
-      selectedOptions,
-      selectedGrades,
-      attendeeTier,
-      customAttendeeCount,
-      freeInputValues,
-      totalCost,
-      attendeeLabel
-    );
+  const handleSaveAndPrint = async (customerInfo: CustomerInfo) => {
+    if (!currentPlan) return;
 
-    // 2. Save to LocalStorage
-    localStorage.setItem('print_data', serializedData);
+    try {
+      setIsSaving(true);
 
-    // 3. Open Print Window
-    window.open('/?print=true', '_blank');
+      // 1. Serialize Basic Data (without ID yet)
+      const dataToSave = {
+        plan: currentPlan,
+        items,
+        selectedOptions: Array.from(selectedOptions),
+        selectedGrades: Array.from(selectedGrades.entries()),
+        attendeeTier,
+        customAttendeeCount,
+        freeInputValues: Array.from(freeInputValues.entries()),
+        totalCost,
+        attendeeLabel,
+        customerInfo
+      };
+
+      // 2. Save to Supabase
+      const { data, error } = await supabase
+        .from('estimates')
+        .insert([
+          {
+            content: dataToSave,
+            customer_info: customerInfo,
+            total_price: totalCost
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const estimateId = data.id;
+
+      // 3. Serialize Full Data for Print (with ID)
+      const serializedData = serializePrintData(
+        currentPlan,
+        items,
+        selectedOptions,
+        selectedGrades,
+        attendeeTier,
+        customAttendeeCount,
+        freeInputValues,
+        totalCost,
+        attendeeLabel,
+        customerInfo,
+        estimateId
+      );
+
+      // 4. Save to LocalStorage
+      localStorage.setItem('print_data', serializedData);
+
+      // 5. Open Print Window
+      window.open('/?print=true', '_blank');
+      setIsInputModalOpen(false);
+
+    } catch (error) {
+      console.error('Error saving estimate:', error);
+      alert('保存に失敗しました。もう一度お試しください。');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
 
@@ -653,7 +706,16 @@ const App: React.FC = () => {
         </main>
 
         {/* Footer */}
-        <Footer total={totalCost} onPrint={openPrintPage} onDownloadPDF={openPrintPage} />
+        <Footer total={totalCost} onPrint={openInputModal} onDownloadPDF={openInputModal} />
+
+        {/* Input Modal */}
+        {isInputModalOpen && (
+          <CustomerInputModal
+            onClose={() => setIsInputModalOpen(false)}
+            onSaveAndPrint={handleSaveAndPrint}
+            isSaving={isSaving}
+          />
+        )}
 
         {/* Detail Modal */}
         {modalItem && (

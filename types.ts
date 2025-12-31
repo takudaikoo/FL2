@@ -54,6 +54,38 @@ export interface Item {
   useDropdown?: boolean;
 }
 
+
+export interface CustomerInfo {
+  deathDate: string; // YYYY-MM-DD
+  deceasedName: string;
+  birthDate: string; // YYYY-MM-DD
+  age?: string;
+  address: string;
+  honseki: string;
+
+  applicantName: string;
+  applicantRelation: string;
+  applicantBirthDate: string;
+
+  chiefMournerName: string;
+  chiefMournerAddress: string;
+  chiefMournerPhone: string;
+  chiefMournerMobile: string;
+
+  religion: string;
+  templeName: string;
+  templePhone: string;
+  templeFax: string;
+}
+
+export interface Estimate {
+  id: number;
+  created_at: string;
+  content: any;
+  customer_info: CustomerInfo;
+  total_price: number;
+}
+
 export interface SelectedState {
   category: PlanCategory;
   planId: PlanId;

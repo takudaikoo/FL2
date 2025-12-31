@@ -14,6 +14,8 @@ const PrintPreview: React.FC = () => {
         freeInputValues: Map<number, number>;
         totalCost: number;
         attendeeLabel: string;
+        customerInfo?: any;
+        estimateId?: number;
     } | null>(null);
 
     useEffect(() => {
@@ -71,6 +73,8 @@ const PrintPreview: React.FC = () => {
                     freeInputValues={data.freeInputValues}
                     totalCost={data.totalCost}
                     attendeeLabel={data.attendeeLabel}
+                    customerInfo={data.customerInfo}
+                    estimateId={data.estimateId}
                 />
             </div>
 

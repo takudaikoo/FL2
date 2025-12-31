@@ -38,7 +38,7 @@ const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('home');
   const [isSaving, setIsSaving] = useState(false);
 
-  const [isSaving, setIsSaving] = useState(false);
+
 
   // Logo Toggle State
   const [logoType, setLogoType] = useState<'FL' | 'LS'>('FL');

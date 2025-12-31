@@ -34,19 +34,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
     const formattedDate = `${today.getFullYear()}年 ${today.getMonth() + 1}月 ${today.getDate()}日`;
 
     // --- Helpers ---
-    const displayItems = items.filter((item) => {
-        if (!item.allowedPlans.includes(plan.id)) return false;
-        if (item.type === 'free_input') return true;
-        if (item.type === 'included') return true;
-        if (item.type === 'checkbox' || item.type === 'tier_dependent') {
-            return selectedOptions.has(item.id);
-        }
-        if (item.type === 'dropdown') {
-            return selectedGrades.has(item.id);
-        }
-        return false;
-    });
-
+    // --- Helpers ---
     const getItemPrice = (item: Item): number => {
         if (item.type === 'checkbox' || item.type === 'included') return item.basePrice || 0;
         if (item.type === 'dropdown') {
@@ -101,6 +89,35 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
         }
         return '-';
     };
+
+    const displayItems = items.filter((item) => {
+        // First check compatibility
+        if (!item.allowedPlans.includes(plan.id)) return false;
+
+        // Check selection status for checkbox/dropdown/tier
+        // (Even if price is > 0, if it's not selected, we shouldn't show it?
+        //  But getItemPrice returns 0 if not selected usually?
+        //  Wait, checkbox prices are fixed basePrice. Need to check if selected.)
+
+        let isSelected = false;
+        if (item.type === 'free_input') isSelected = true; // Always considered, check price later
+        if (item.type === 'included') isSelected = true;
+        if (item.type === 'checkbox' || item.type === 'tier_dependent') {
+            isSelected = selectedOptions.has(item.id);
+        }
+        if (item.type === 'dropdown') {
+            isSelected = selectedGrades.has(item.id);
+        }
+
+        if (!isSelected) return false;
+
+        // Final check: Price must be > 0
+        // (Assuming "amount generated" means strictly positive. 
+        //  If discount (negative) is possible, maybe !== 0. 
+        //  But for now > 0 seems safer for "options that generate cost")
+        const price = getItemPrice(item);
+        return price > 0;
+    });
 
     // Prepare table rows (Fixed 25 rows for A4 layout)
     const MAX_ROWS = 25;
@@ -294,22 +311,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                         </div>
                     </div>
 
-                    {/* Selected Plan Section */}
-                    <div className="mt-1">
-                        <h2 className="text-lg font-bold mb-1.5 border-l-4 border-purple-600 pl-2">選択されたプラン</h2>
-                        <div className="border border-purple-800 rounded-lg overflow-hidden">
-                            <div className="bg-white text-black font-bold p-2 text-center text-lg border-b border-purple-800 !print-color-adjust-exact">
-                                {plan.name}
-                            </div>
-                            <div className="p-3 bg-purple-50 flex items-center justify-center">
-                                <div className="text-center">
-                                    <p className="font-bold text-gray-800">参列人数: {attendeeLabel}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Disclaimer / Notes */}
+                    {/* Disclaimer / Notes - Moved up since plan box is removed */}
                     <div className="mt-auto px-1 py-2 border-t border-gray-300">
                         <div className="text-[7pt] text-gray-500 leading-tight text-justify">
                             <p className="mb-1">※個人情報の取扱いについて: ご提供いただいたお客様の個人情報は、葬儀の施行、請求業務、および関連サービスのご案内のみに利用し、法令に基づく場合を除き、第三者への提供は行いません。</p>
@@ -323,12 +325,12 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                 {/* --- Right Column: Estimate --- */}
                 <div className="flex flex-col h-full">
                     {/* Header Info */}
-                    <div className="flex justify-between items-end mb-6 border-b-2 border-black pb-2">
+                    <div className="flex justify-between items-end mb-4 border-b-2 border-black pb-2">
                         <div className="text-base">発行日: {formattedDate}</div>
                         <div className="text-xl font-bold font-mono">No. {estimateId ? String(estimateId).padStart(6, '0') : '------'}</div>
                     </div>
 
-                    <div className="flex mb-6 items-start">
+                    <div className="flex mb-4 items-start">
                         {/* Logo */}
                         <div className="w-12 h-12 mr-4 flex items-center justify-center shrink-0 !print-color-adjust-exact">
                             <img src="/images/logo.png" alt="First Leaf Logo" className="w-full h-full object-contain" />
@@ -351,8 +353,23 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                         </div>
                     </div>
 
-                    {/* New Section Header */}
-                    <div className="mb-2 text-center font-bold bg-gray-800 text-white py-1 rounded-t-sm !print-color-adjust-exact">お見積明細書</div>
+                    {/* Basic Plan Section */}
+                    <div className="mb-4 text-xs">
+                        <div className="font-bold bg-gray-600 text-white py-1 px-2 mb-1 !print-color-adjust-exact">基本プラン</div>
+                        <div className="flex border-b border-gray-300">
+                            <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 !print-color-adjust-exact">選択されたプラン</div>
+                            <div className="flex-1 py-1 px-2 font-bold">{plan.name}</div>
+                        </div>
+                        {attendeeLabel && attendeeLabel !== '-' && (
+                            <div className="flex border-b border-gray-300">
+                                <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 !print-color-adjust-exact">参列人数</div>
+                                <div className="flex-1 py-1 px-2">{attendeeLabel}</div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Options Section Header */}
+                    <div className="mb-0 text-center font-bold bg-gray-600 text-white py-1 rounded-t-sm !print-color-adjust-exact">オプション</div>
 
                     {/* Items Table - Fixed Height Container */}
                     <div className="flex-1 flex flex-col border-x border-b border-gray-400 text-sm">
@@ -363,7 +380,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                         {/* Rows Container - Flex Grow to fill space */}
                         <div className="flex-1 flex flex-col bg-white">
-                            {/* Base Plan Row */}
+                            {/* Base Plan Row (Always show) */}
                             <div className="flex border-b border-gray-200 min-h-[30px] items-center text-xs hover:bg-gray-50">
                                 <div className="flex-1 px-3 truncate border-r border-gray-200 h-full flex items-center font-bold text-gray-800">
                                     基本料金
@@ -373,19 +390,26 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                 </div>
                             </div>
 
-                            {tableRows.map((row, i) => (
-                                <div key={i} className="flex border-b border-gray-200 min-h-[30px] items-center text-xs">
-                                    <div className="flex-1 px-3 border-r border-gray-200 h-full flex items-center overflow-hidden">
-                                        <span className="truncate">{row.name}</span>
-                                        {row.content && row.content !== '-' && (
-                                            <span className="text-[10px] text-gray-500 bg-gray-100 px-1 rounded shrink-0 ml-2">{row.content}</span>
-                                        )}
+                            {tableRows.map((row, i) => {
+                                // Filter out empty rows unless they are placeholder used to fill space? 
+                                // Actually checking logic above, we need to FILTER items first before mapping to rows. 
+                                // But here we map over tableRows which is MAX_ROWS.
+                                // We need to update tableRows creation logic.
+                                // For now, let's just render. I need to update tableRows definition first!
+                                return (
+                                    <div key={i} className="flex border-b border-gray-200 min-h-[30px] items-center text-xs">
+                                        <div className="flex-1 px-3 border-r border-gray-200 h-full flex items-center overflow-hidden">
+                                            <span className="truncate">{row.name}</span>
+                                            {row.content && row.content !== '-' && (
+                                                <span className="text-[10px] text-gray-500 bg-gray-100 px-1 rounded shrink-0 ml-2">{row.content}</span>
+                                            )}
+                                        </div>
+                                        <div className="w-[120px] text-right px-3 h-full flex items-center justify-end font-mono text-gray-700">
+                                            {row.price !== null ? `¥${row.price.toLocaleString()}` : ''}
+                                        </div>
                                     </div>
-                                    <div className="w-[120px] text-right px-3 h-full flex items-center justify-end font-mono text-gray-700">
-                                        {row.price !== null ? `¥${row.price.toLocaleString()}` : ''}
-                                    </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                             {/* Fill remaining space if any */}
                             <div className="flex-1 bg-white"></div>
                         </div>
@@ -395,14 +419,14 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-xs py-1 !print-color-adjust-exact">
                                 備考
                             </div>
-                            <div className="h-[100px] bg-white p-2 text-xs text-gray-600">
+                            <div className="h-[80px] bg-white p-2 text-xs text-gray-600">
                                 {/* Empty space for handwriting or dynamic remarks */}
                             </div>
                         </div>
                     </div>
 
                     {/* Totals Section */}
-                    <div className="mt-6 shrink-0 ml-auto w-2/3">
+                    <div className="mt-4 shrink-0 ml-auto w-2/3">
                         <div className="border border-gray-800 shadow-sm rounded-sm overflow-hidden">
                             <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
                                 <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">小計</div>

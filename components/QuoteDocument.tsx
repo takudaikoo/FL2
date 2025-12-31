@@ -179,7 +179,11 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
             }}
         >
             {/* Header Title */}
-            <h1 className="text-3xl font-bold mb-6 tracking-wider border-b-2 border-black pb-2">御葬儀見積書兼申込書</h1>
+            {/* Header Title */}
+            <div className="flex justify-between items-end border-b-2 border-black pb-2 mb-6">
+                <h1 className="text-3xl font-bold tracking-wider">御葬儀見積書兼申込書</h1>
+                <div className="text-sm font-medium mb-1">作成日: {formattedDate}</div>
+            </div>
 
             <div className="grid grid-cols-2 gap-8 h-full items-start">
                 {/* --- Left Column: Form & Info --- */}

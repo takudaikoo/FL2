@@ -344,8 +344,8 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                 <img
                                     src="/images/stamp.png"
                                     alt="Stamp"
-                                    className="absolute -right-2 -bottom-1 object-contain opacity-80 z-10"
-                                    style={{ width: '40px', height: '40px' }}
+                                    className="absolute object-contain opacity-80 z-10"
+                                    style={{ width: '40px', height: '40px', right: '-60px', top: '10px' }}
                                 />
                             </div>
                         </div>

@@ -358,6 +358,13 @@ const App: React.FC = () => {
     );
   }
 
+  // Logo Toggle State
+  const [logoType, setLogoType] = useState<'FL' | 'LS'>('FL');
+
+  const toggleLogo = () => {
+    setLogoType(prev => prev === 'FL' ? 'LS' : 'FL');
+  };
+
   // Home View
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 print:bg-white">
@@ -365,10 +372,21 @@ const App: React.FC = () => {
         {/* Header */}
         <header className="bg-white border-b border-gray-200 py-3 px-6 flex-shrink-0">
           <div className="max-w-7xl mx-auto flex items-center gap-3">
-            <div className="w-8 h-8 bg-emerald-600 rounded-tr-xl rounded-bl-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xs">FL</span>
+            <div
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={toggleLogo}
+              title="Click to switch logo"
+            >
+              <img
+                src={`/images/logo${logoType}.png`}
+                alt="Logo"
+                className="h-10 w-auto object-contain"
+              />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800 tracking-wide">First Leaf <span className="text-sm font-normal text-gray-500 ml-2">葬儀プランお見積り</span></h1>
+            <h1 className="text-2xl font-bold text-gray-800 tracking-wide">
+              {logoType === 'FL' ? 'First Leaf' : 'Last Stone'}
+              <span className="text-sm font-normal text-gray-500 ml-2">葬儀プランお見積り</span>
+            </h1>
           </div>
         </header>
 

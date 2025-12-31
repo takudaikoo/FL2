@@ -341,7 +341,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                 <div className="mt-0.5 font-medium flex items-center">
                                     <span>代表取締役 大石康太</span>
                                 </div>
-                                <img src="/images/stamp.png" alt="Stamp" className="absolute -right-2 -bottom-1 h-14 w-14 object-contain opacity-80 z-10" />
+                                <img src="/images/stamp.png" alt="Stamp" className="absolute -right-1 -bottom-1 h-10 w-10 object-contain opacity-80 z-10" />
                             </div>
                         </div>
                     </div>

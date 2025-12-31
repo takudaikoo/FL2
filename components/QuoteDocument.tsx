@@ -330,15 +330,18 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     <div className="flex mb-6 items-start">
                         {/* Logo */}
-                        <div className="w-16 h-16 mr-4 flex items-center justify-center shrink-0 !print-color-adjust-exact">
+                        <div className="w-12 h-12 mr-4 flex items-center justify-center shrink-0 !print-color-adjust-exact">
                             <img src="/images/logo.png" alt="First Leaf Logo" className="w-full h-full object-contain" />
                         </div>
                         <div className="flex-1">
                             <div className="font-bold text-xl mb-1 text-gray-800">株式会社ファーストリーフ</div>
-                            <div className="text-sm text-gray-600 leading-snug">
+                            <div className="text-sm text-gray-600 leading-snug relative">
                                 <div>〒253-0085 神奈川県茅ヶ崎市矢畑682-10</div>
                                 <div className="mt-0.5">TEL: 0467-00-0000 / FAX: 0467-00-0000</div>
-                                <div className="mt-0.5 font-medium">代表取締役 大石康太</div>
+                                <div className="mt-0.5 font-medium flex items-center relative">
+                                    <span>代表取締役 大石康太</span>
+                                    <img src="/images/stamp.png" alt="Stamp" className="absolute left-[110px] -top-3 h-12 w-12 object-contain opacity-80 z-10" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -413,13 +416,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                         </div>
                     </div>
 
-                    {/* Staff Seal */}
-                    <div className="mt-8 ml-auto border border-gray-400 w-40 h-20 flex shrink-0 relative">
-                        <div className="absolute -top-3 left-2 bg-white px-1 text-xs text-gray-500">担当者印</div>
-                        <div className="flex-1 flex items-center justify-center text-gray-300 text-sm">
-                            <img src="/images/stamp.png" alt="Stamp" className="h-16 w-16 object-contain opacity-80" />
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>

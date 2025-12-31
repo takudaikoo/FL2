@@ -378,7 +378,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                     <div className="flex-1 px-3 border-r border-gray-200 h-full flex items-center justify-between overflow-hidden">
                                         <span className="truncate mr-2">{row.name}</span>
                                         {row.content && row.content !== '-' && (
-                                            <span className="text-[10px] text-gray-500 bg-gray-100 px-1 rounded shrink-0">{row.content}</span>
+                                            <span className="text-[10px] text-gray-500 bg-gray-100 px-1 rounded shrink-0 mr-2">{row.content}</span>
                                         )}
                                     </div>
                                     <div className="w-[120px] text-right px-3 h-full flex items-center justify-end font-mono text-gray-700">

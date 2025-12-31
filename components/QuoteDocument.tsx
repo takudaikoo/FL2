@@ -298,7 +298,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     <div className="mt-1">
                         <h2 className="text-lg font-bold mb-1.5 border-l-4 border-purple-600 pl-2">選択されたプラン</h2>
                         <div className="border border-purple-800 rounded-lg overflow-hidden">
-                            <div className="bg-purple-700 text-white font-bold p-2 text-center text-lg !print-color-adjust-exact">
+                            <div className="bg-white text-black font-bold p-2 text-center text-lg border-b border-purple-800 !print-color-adjust-exact">
                                 {plan.name}
                             </div>
                             <div className="p-3 bg-purple-50 flex items-center justify-center">
@@ -366,7 +366,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             {/* Base Plan Row */}
                             <div className="flex border-b border-gray-200 min-h-[30px] items-center text-xs hover:bg-gray-50">
                                 <div className="flex-1 px-3 truncate border-r border-gray-200 h-full flex items-center font-bold text-gray-800">
-                                    {plan.name} 基本料金
+                                    基本料金
                                 </div>
                                 <div className="w-[120px] text-right px-3 h-full flex items-center justify-end font-medium">
                                     ¥{plan.price.toLocaleString()}

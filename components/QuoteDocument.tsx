@@ -312,8 +312,9 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     </div>
 
                     {/* Disclaimer / Notes - Moved up since plan box is removed */}
-                    <div className="mt-auto px-1 py-2 border-t border-gray-300">
-                        <div className="text-[7pt] text-gray-500 leading-tight text-justify">
+                    <div className="mt-auto border-t border-gray-300">
+                        <div className="bg-gray-200 px-2 py-1 text-xs font-bold mb-1 !print-color-adjust-exact">注意事項</div>
+                        <div className="px-1 py-1 text-[7pt] text-gray-500 leading-tight text-justify">
                             <p className="mb-1">※個人情報の取扱いについて: ご提供いただいたお客様の個人情報は、葬儀の施行、請求業務、および関連サービスのご案内のみに利用し、法令に基づく場合を除き、第三者への提供は行いません。</p>
                             <p className="mb-1">※お支払期限: 請求書発行後、原則として7日以内にお振込みをお願いいたします。</p>
                             <p>※見積有効期限: 本見積書の有効期限は発行日より1ヶ月間とさせていただきます。</p>
@@ -355,7 +356,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     {/* Basic Plan Section */}
                     <div className="mb-4 text-xs">
-                        <div className="font-bold bg-gray-600 text-white py-1 px-2 mb-1 !print-color-adjust-exact">基本プラン</div>
+                        <div className="font-bold bg-gray-300 text-black text-center py-1 px-2 mb-1 !print-color-adjust-exact">基本プラン</div>
                         <div className="flex border-b border-gray-300">
                             <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 !print-color-adjust-exact">選択されたプラン</div>
                             <div className="flex-1 py-1 px-2 font-bold">{plan.name}</div>
@@ -369,7 +370,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     </div>
 
                     {/* Options Section Header */}
-                    <div className="mb-0 text-center font-bold bg-gray-600 text-white py-1 rounded-t-sm !print-color-adjust-exact">オプション</div>
+                    <div className="mb-0 text-center font-bold bg-gray-300 text-black py-1 rounded-t-sm !print-color-adjust-exact">オプション</div>
 
                     {/* Items Table - Fixed Height Container */}
                     <div className="flex-1 flex flex-col border-x border-b border-gray-400 text-sm">

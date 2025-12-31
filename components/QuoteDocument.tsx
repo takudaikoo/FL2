@@ -337,7 +337,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="font-bold text-xl mb-1 text-gray-800">株式会社ファーストリーフ</div>
                             <div className="text-sm text-gray-600 leading-snug relative w-fit">
                                 <div>〒253-0085 神奈川県茅ヶ崎市矢畑682-10</div>
-                                <div className="mt-0.5">TEL: 0467-00-0000 / FAX: 0467-00-0000</div>
+                                <div className="mt-0.5">TEL: 0467-38-5617 / FAX: 0467-38-5604</div>
                                 <div className="mt-0.5 font-medium flex items-center">
                                     <span>代表取締役 大石康太</span>
                                 </div>

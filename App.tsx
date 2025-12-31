@@ -1,14 +1,14 @@
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { supabase } from './lib/supabase';
-import type { Plan as DBPlan, Item as DBItem, AttendeeOption as DBAttendeeOption } from './lib/supabase';
-import { PlanCategory, PlanId, AttendeeTier, Item, DropdownOption, Plan, AttendeeOption } from './types';
+import { PlanCategory, PlanId, AttendeeTier, Item, AttendeeOption, Plan, CustomerInfo } from './types';
 import DetailModal from './components/DetailModal';
 import Footer from './components/Footer';
 import { Info, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import PrintPreview from './components/PrintPreview';
-import CustomerInputModal from './components/CustomerInputModal';
-import { CustomerInfo } from './types';
+import CustomerInputPage from './components/CustomerInputPage';
 import { serializePrintData } from './lib/serialization';
+
+type ViewMode = 'home' | 'input';
 
 const App: React.FC = () => {
   // Check for print mode
@@ -32,10 +32,10 @@ const App: React.FC = () => {
   const [customAttendeeCount, setCustomAttendeeCount] = useState<string>('');
   const [freeInputValues, setFreeInputValues] = useState<Map<number, number>>(new Map());
 
-  // Modal state
+  // Modal & View state
   const [modalItem, setModalItem] = useState<Item | null>(null);
   const [isIncludedOpen, setIsIncludedOpen] = useState(false);
-  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('home');
   const [isSaving, setIsSaving] = useState(false);
 
   // Supabase data
@@ -224,13 +224,19 @@ const App: React.FC = () => {
     return option?.label || '';
   }, [attendeeTier, customAttendeeCount, attendeeOptions]);
 
-  // Unified Print/PDF Handler
-  const openInputModal = () => {
+  // View Navigation Handlers
+  const goToInputPage = () => {
     if (!currentPlan) {
       alert('プランが選択されていません。');
       return;
     }
-    setIsInputModalOpen(true);
+    setViewMode('input');
+    // Scroll to top
+    window.scrollTo(0, 0);
+  };
+
+  const handleBackToHome = () => {
+    setViewMode('home');
   };
 
   const handleSaveAndPrint = async (customerInfo: CustomerInfo) => {
@@ -290,7 +296,10 @@ const App: React.FC = () => {
 
       // 5. Open Print Window
       window.open('/?print=true', '_blank');
-      setIsInputModalOpen(false);
+
+      // Optionally stay on input page or reset
+      // For now, improved UX would be:
+      // setViewMode('home'); // But user might want to re-print or correct info. Keep current view.
 
     } catch (error) {
       console.error('Error saving estimate:', error);
@@ -338,6 +347,18 @@ const App: React.FC = () => {
     );
   }
 
+  // Input View
+  if (viewMode === 'input') {
+    return (
+      <CustomerInputPage
+        onBack={handleBackToHome}
+        onSaveAndPrint={handleSaveAndPrint}
+        isSaving={isSaving}
+      />
+    );
+  }
+
+  // Home View
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 print:bg-white">
       <div className="contents print:hidden">
@@ -446,7 +467,6 @@ const App: React.FC = () => {
               </div>
 
               {/* Total Cost Display (Moved from Footer) */}
-
 
               {/* Total Summary for Print (Visible only in print) */}
               <div className="hidden mt-8 border-t-2 border-gray-800 pt-4">
@@ -706,16 +726,11 @@ const App: React.FC = () => {
         </main>
 
         {/* Footer */}
-        <Footer total={totalCost} onPrint={openInputModal} onDownloadPDF={openInputModal} />
-
-        {/* Input Modal */}
-        {isInputModalOpen && (
-          <CustomerInputModal
-            onClose={() => setIsInputModalOpen(false)}
-            onSaveAndPrint={handleSaveAndPrint}
-            isSaving={isSaving}
-          />
-        )}
+        <Footer
+          total={totalCost}
+          onPrint={goToInputPage}
+          onDownloadPDF={goToInputPage}
+        />
 
         {/* Detail Modal */}
         {modalItem && (

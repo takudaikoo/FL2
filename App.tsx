@@ -248,6 +248,37 @@ const App: React.FC = () => {
     setLogoType(prev => prev === 'FL' ? 'LS' : 'FL');
   };
 
+  const handleOutputClick = async () => {
+    if (!currentPlan) {
+      alert('プランが選択されていません。');
+      return;
+    }
+
+    // Call save/print with empty customer info to generate quote directly
+    // This reuses the existing save logic but skips the input form
+    const emptyCustomerInfo: CustomerInfo = {
+      deathDate: '',
+      deceasedName: '',
+      birthDate: '',
+      age: '',
+      address: '',
+      honseki: '',
+      applicantName: '',
+      applicantRelation: '',
+      applicantBirthDate: '',
+      chiefMournerName: '',
+      chiefMournerAddress: '',
+      chiefMournerPhone: '',
+      chiefMournerMobile: '',
+      religion: '',
+      templeName: '',
+      templePhone: '',
+      templeFax: ''
+    };
+
+    await handleSaveAndPrint(emptyCustomerInfo);
+  };
+
   const handleSaveAndPrint = async (customerInfo: CustomerInfo) => {
     if (!currentPlan) return;
 
@@ -749,8 +780,8 @@ const App: React.FC = () => {
         {/* Footer */}
         <Footer
           total={totalCost}
-          onPrint={goToInputPage}
-          onDownloadPDF={goToInputPage}
+          onInputClick={goToInputPage}
+          onOutputClick={handleOutputClick}
         />
 
         {/* Detail Modal */}

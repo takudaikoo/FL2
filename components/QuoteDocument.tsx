@@ -31,7 +31,7 @@ const COMPANY_INFO = {
         contact: 'TEL: 0466-52-6896 / FAX: 0466-52-6904',
         rep: '代表取締役　菅野 大輝',
         stamp: null,
-        logo: '/images/logoLS.png'
+        logo: '/images/logoLS2.png'
     }
 };
 

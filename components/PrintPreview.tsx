@@ -16,6 +16,7 @@ const PrintPreview: React.FC = () => {
         attendeeLabel: string;
         customerInfo?: any;
         estimateId?: number;
+        logoType?: 'FL' | 'LS';
     } | null>(null);
 
     useEffect(() => {
@@ -75,6 +76,7 @@ const PrintPreview: React.FC = () => {
                     attendeeLabel={data.attendeeLabel}
                     customerInfo={data.customerInfo}
                     estimateId={data.estimateId}
+                    logoType={data.logoType || 'FL'}
                 />
             </div>
 

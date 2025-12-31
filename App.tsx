@@ -265,7 +265,8 @@ const App: React.FC = () => {
         freeInputValues: Array.from(freeInputValues.entries()),
         totalCost,
         attendeeLabel,
-        customerInfo
+        customerInfo,
+        logoType // Add logoType to saved content
       };
 
       // 2. Save to Supabase
@@ -297,7 +298,8 @@ const App: React.FC = () => {
         totalCost,
         attendeeLabel,
         customerInfo,
-        estimateId
+        estimateId,
+        logoType
       );
 
       // 4. Save to LocalStorage

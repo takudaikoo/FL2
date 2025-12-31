@@ -12,6 +12,7 @@ export interface PrintData {
     attendeeLabel: string;
     customerInfo?: any; // strict typing later if needed, avoiding circular imports annoyance for now or just import types
     estimateId?: number;
+    logoType?: 'FL' | 'LS';
 }
 
 
@@ -27,7 +28,8 @@ export const serializePrintData = (
     totalCost: number,
     attendeeLabel: string,
     customerInfo?: any,
-    estimateId?: number
+    estimateId?: number,
+    logoType?: 'FL' | 'LS'
 ): string => {
     const data: PrintData = {
         plan,
@@ -41,6 +43,7 @@ export const serializePrintData = (
         attendeeLabel,
         customerInfo,
         estimateId,
+        logoType,
     };
     return JSON.stringify(data);
 };
@@ -57,6 +60,7 @@ export const deserializePrintData = (json: string): {
     attendeeLabel: string;
     customerInfo?: any;
     estimateId?: number;
+    logoType?: 'FL' | 'LS';
 } | null => {
     try {
         const data: PrintData = JSON.parse(json);
@@ -72,6 +76,7 @@ export const deserializePrintData = (json: string): {
             attendeeLabel: data.attendeeLabel,
             customerInfo: data.customerInfo,
             estimateId: data.estimateId,
+            logoType: data.logoType,
         };
     } catch (e) {
         console.error('Failed to parse print data:', e);

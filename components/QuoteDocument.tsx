@@ -13,7 +13,27 @@ interface QuoteDocumentProps {
     attendeeLabel: string;
     customerInfo?: any;
     estimateId?: number;
+    logoType: 'FL' | 'LS';
 }
+
+const COMPANY_INFO = {
+    FL: {
+        name: '株式会社ファーストリーフ',
+        address: '〒253-0085 神奈川県茅ヶ崎市矢畑682-10',
+        contact: 'TEL: 0467-38-5617 / FAX: 0467-38-5604',
+        rep: '代表取締役 大石康太',
+        stamp: '/images/stamp.png',
+        logo: '/images/logo.png'
+    },
+    LS: {
+        name: '株式会社 リンクサービス',
+        address: '〒251-0861 神奈川県藤沢市大庭5135-13',
+        contact: 'TEL: 0466-52-6896 / FAX: 0466-52-6904',
+        rep: '代表取締役　菅野 大輝',
+        stamp: null,
+        logo: '/images/logoLS.png'
+    }
+};
 
 const QuoteDocument: React.FC<QuoteDocumentProps> = ({
     plan,
@@ -27,7 +47,10 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
     attendeeLabel,
     customerInfo,
     estimateId,
+    logoType
 }) => {
+    // Current company info
+    const info = COMPANY_INFO[logoType];
     const TAX_RATE = 0.10;
     const totalWithTax = Math.floor(totalCost * (1 + TAX_RATE));
     const today = new Date();
@@ -344,22 +367,24 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     <div className="flex mb-4 items-start">
                         {/* Logo */}
                         <div className="w-12 h-12 mr-4 flex items-center justify-center shrink-0 !print-color-adjust-exact">
-                            <img src="/images/logo.png" alt="First Leaf Logo" className="w-full h-full object-contain" />
+                            <img src={info.logo} alt="Company Logo" className="w-full h-full object-contain" />
                         </div>
                         <div className="flex-1">
-                            <div className="font-bold text-xl mb-1 text-gray-800">株式会社ファーストリーフ</div>
+                            <div className="font-bold text-xl mb-1 text-gray-800">{info.name}</div>
                             <div className="text-sm text-gray-600 leading-snug relative w-fit">
-                                <div>〒253-0085 神奈川県茅ヶ崎市矢畑682-10</div>
-                                <div className="mt-0.5">TEL: 0467-38-5617 / FAX: 0467-38-5604</div>
+                                <div>{info.address}</div>
+                                <div className="mt-0.5">{info.contact}</div>
                                 <div className="mt-0.5 font-medium flex items-center">
-                                    <span>代表取締役 大石康太</span>
+                                    <span>{info.rep}</span>
                                 </div>
-                                <img
-                                    src="/images/stamp.png"
-                                    alt="Stamp"
-                                    className="absolute object-contain opacity-80 z-10"
-                                    style={{ width: '40px', height: '40px', right: '-10px', top: '10px' }}
-                                />
+                                {info.stamp && (
+                                    <img
+                                        src={info.stamp}
+                                        alt="Stamp"
+                                        className="absolute object-contain opacity-80 z-10"
+                                        style={{ width: '40px', height: '40px', right: '-10px', top: '10px' }}
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>

@@ -92,6 +92,9 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
             if (name === 'birthDate') {
                 const age = calculateAge(value);
                 newData.age = age;
+            } else if (name === 'applicantBirthDate') {
+                const age = calculateAge(value);
+                newData.applicantAge = age;
             }
 
             return newData;
@@ -245,6 +248,17 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
                                     name="applicantBirthDate"
                                     value={formData.applicantBirthDate}
                                     onChange={handleChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1.5">年齢 (才)</label>
+                                <input
+                                    type="text"
+                                    name="applicantAge"
+                                    value={formData.applicantAge || ''}
+                                    onChange={handleChange}
+                                    placeholder="自動計算"
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
                                 />
                             </div>

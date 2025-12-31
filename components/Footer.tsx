@@ -16,6 +16,14 @@ const Footer: React.FC<FooterProps> = ({ total, onPrint, onDownloadPDF }) => {
           <span className="font-extrabold text-emerald-700 tracking-tight leading-none" style={{ fontSize: '3.5rem' }}>¥{total.toLocaleString()}</span>
         </div>
         <div className="flex gap-4">
+          {/* Customer Input Button (New) */}
+          <button
+            onClick={onPrint} // Reusing onPrint since it opens the modal
+            className="flex items-center gap-3 bg-white border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 px-6 py-4 rounded-full font-bold text-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1 active:translate-y-0"
+          >
+            <span>📝 顧客情報入力</span>
+          </button>
+
           {/* PDF Download Button */}
           <button
             onClick={onDownloadPDF}

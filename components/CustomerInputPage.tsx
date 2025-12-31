@@ -6,10 +6,11 @@ interface CustomerInputPageProps {
     onBack: () => void;
     onSaveAndPrint: (info: CustomerInfo) => void;
     isSaving: boolean;
+    initialData?: CustomerInfo | null;
 }
 
-const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAndPrint, isSaving }) => {
-    const [formData, setFormData] = useState<CustomerInfo>({
+const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAndPrint, isSaving, initialData }) => {
+    const [formData, setFormData] = useState<CustomerInfo>(initialData || {
         deathDate: '',
         deceasedName: '',
         birthDate: '',
@@ -28,6 +29,14 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
         templePhone: '',
         templeFax: '',
     });
+
+
+
+    React.useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        }
+    }, [initialData]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

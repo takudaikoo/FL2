@@ -34,6 +34,9 @@ const App: React.FC = () => {
 
   // Modal & View state
   const [modalItem, setModalItem] = useState<Item | null>(null);
+
+  // State for loaded customer info
+  const [loadedCustomerInfo, setLoadedCustomerInfo] = useState<CustomerInfo | null>(null);
   const [isIncludedOpen, setIsIncludedOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('home');
   const [isSaving, setIsSaving] = useState(false);
@@ -277,6 +280,96 @@ const App: React.FC = () => {
     };
 
     await handleSaveAndPrint(emptyCustomerInfo);
+    await handleSaveAndPrint(emptyCustomerInfo);
+  };
+
+  const handleLoadEstimate = async () => {
+    const input = window.prompt('呼び出す見積番号を入力してください');
+    if (!input) return;
+
+    const id = parseInt(input);
+    if (isNaN(id)) {
+      alert('有効な数字を入力してください');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('estimates')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error || !data) {
+        alert('見積データが見つかりませんでした');
+        console.error('Error fetching estimate:', error);
+        return;
+      }
+
+      const content = data.content;
+      if (!content) {
+        alert('データの形式が正しくありません');
+        return;
+      }
+
+      // Restore State
+      if (content.plan && content.plan.id) {
+        // Find the plan ID from the saved plan object
+        // The PlanId type is 'a' | 'b' | 'c' etc.
+        // We assume content.plan.id is valid
+        setSelectedPlanId(content.plan.id as any);
+      }
+      if (content.items) setItems(content.items);
+
+      if (content.selectedOptions) {
+        setSelectedOptions(new Set(content.selectedOptions));
+      }
+
+      if (content.selectedGrades) {
+        // Handle both array of entries and object/map serialization
+        const grades = new Map(content.selectedGrades);
+        setSelectedGrades(grades);
+      }
+
+      if (content.attendeeTier) setAttendeeTier(content.attendeeTier);
+      if (content.customAttendeeCount) setCustomAttendeeCount(content.customAttendeeCount);
+
+      if (content.freeInputValues) {
+        const freeInputs = new Map(content.freeInputValues);
+        setFreeInputValues(freeInputs);
+      }
+
+      if (content.customerInfo) {
+        // If customer info exists (even empty), set it. 
+        // If retrieving an "output only" quote, it might be empty strings, which is fine.
+        // We probably want to populate the input form with this if the user goes there.
+        // The input form (CustomerInputPage) uses its own local state or needs to receive this?
+        // Wait, CustomerInputPage is receiving props from App? No, logic is currently missing TO PASS state to CustomerInputPage.
+        // Currently App.tsx doesn't seem to pass customerInfo TO the CustomerInputPage. 
+        // Let's check CustomerInputPage usage. 
+        // It seems CustomerInputPage might be using a callback `onSubmit` but doesn't take `initialData`.
+        // To fully support "loading" customer info, we need to pass it to CustomerInputPage.
+        // FOR NOW: I will just ensure the state in App (if any) or prepare it. 
+        // Actually App.tsx DOES NOT hold customerInfo state! `handleSaveAndPrint` takes it as arg from InputPage.
+        // So where do we store the loaded customer info?
+        // We should add a state for `loadedCustomerInfo` in App and pass it to CustomerInputPage.
+      }
+
+      if (content.logoType) setLogoType(content.logoType);
+
+      // We also need to handle the loaded customer info for the Input Page.
+      // I'll add a state for it in the next step or right here if I can edit the top level.
+      // For now, let's set the other states. I will need to add `loadedCustomerInfo` state to App.tsx.
+      if (content.customerInfo) {
+        setLoadedCustomerInfo(content.customerInfo);
+      }
+
+      alert(`見積番号 ${id} を読み込みました。`);
+
+    } catch (e) {
+      console.error('Unexpected error loading estimate:', e);
+      alert('読み込み中にエラーが発生しました');
+    }
   };
 
   const handleSaveAndPrint = async (customerInfo: CustomerInfo) => {
@@ -396,16 +489,27 @@ const App: React.FC = () => {
         onBack={handleBackToHome}
         onSaveAndPrint={handleSaveAndPrint}
         isSaving={isSaving}
+        initialData={loadedCustomerInfo}
       />
     );
   }
+
+
 
   // Home View
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 print:bg-white">
       <div className="contents print:hidden">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 py-3 px-6 flex-shrink-0">
+        <header className="bg-white border-b border-gray-200 py-3 px-6 flex-shrink-0 relative">
+          {/* Load Button - Top Right */}
+          <button
+            onClick={handleLoadEstimate}
+            className="absolute top-3 right-4 text-xs text-gray-400 hover:text-gray-600 border border-gray-200 hover:border-gray-400 rounded px-2 py-1 transition-colors"
+          >
+            呼出
+          </button>
+
           <div className="max-w-7xl mx-auto flex items-center gap-3">
             <div
               className="cursor-pointer hover:opacity-80 transition-opacity"

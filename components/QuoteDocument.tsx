@@ -335,13 +335,13 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                         </div>
                         <div className="flex-1">
                             <div className="font-bold text-xl mb-1 text-gray-800">株式会社ファーストリーフ</div>
-                            <div className="text-sm text-gray-600 leading-snug relative">
+                            <div className="text-sm text-gray-600 leading-snug relative w-fit">
                                 <div>〒253-0085 神奈川県茅ヶ崎市矢畑682-10</div>
                                 <div className="mt-0.5">TEL: 0467-00-0000 / FAX: 0467-00-0000</div>
-                                <div className="mt-0.5 font-medium flex items-center relative">
+                                <div className="mt-0.5 font-medium flex items-center">
                                     <span>代表取締役 大石康太</span>
-                                    <img src="/images/stamp.png" alt="Stamp" className="absolute left-[110px] -top-3 h-12 w-12 object-contain opacity-80 z-10" />
                                 </div>
+                                <img src="/images/stamp.png" alt="Stamp" className="absolute -right-4 -bottom-1 h-16 w-16 object-contain opacity-80 z-10" />
                             </div>
                         </div>
                     </div>

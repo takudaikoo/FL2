@@ -382,7 +382,7 @@ const App: React.FC = () => {
               <img
                 src={`/images/logo${logoType}.png`}
                 alt="Logo"
-                className="h-10 w-auto object-contain"
+                className="h-8 w-auto object-contain"
               />
             </div>
             <h1 className="text-2xl font-bold text-gray-800 tracking-wide">

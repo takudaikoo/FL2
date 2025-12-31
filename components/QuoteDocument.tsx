@@ -317,9 +317,9 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     </div>
 
                     {/* Disclaimer / Notes - Moved up since plan box is removed */}
-                    <div className="mt-auto border-t border-gray-300">
+                    <div className="mt-auto border-t border-gray-300 pt-4">
                         <div
-                            className="px-2 py-1 text-sm font-bold mb-1 text-center rounded-sm !print-color-adjust-exact"
+                            className="px-2 py-1 text-lg font-bold mb-1 text-center rounded-sm !print-color-adjust-exact"
                             style={{ backgroundColor: '#374151', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
                         >
                             注意事項
@@ -338,7 +338,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     {/* Header Info */}
                     <div className="flex justify-between items-end mb-4 border-b-2 border-black pb-2">
                         <div className="text-base">発行日: {formattedDate}</div>
-                        <div className="text-xl font-bold font-mono">No. {estimateId ? String(estimateId).padStart(6, '0') : '------'}</div>
+                        {/* No. removed from here */}
                     </div>
 
                     <div className="flex mb-4 items-start">
@@ -367,7 +367,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     {/* Basic Plan Section */}
                     <div className="mb-4 text-xs">
                         <div
-                            className="font-bold text-center text-sm py-1 px-2 mb-1 !print-color-adjust-exact"
+                            className="font-bold text-center text-lg py-1 px-2 mb-1 !print-color-adjust-exact"
                             style={{ backgroundColor: '#374151', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
                         >
                             基本プラン
@@ -386,7 +386,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                     {/* Options Section Header */}
                     <div
-                        className="mb-0 text-center font-bold text-sm py-1 rounded-t-sm !print-color-adjust-exact"
+                        className="mb-0 text-center font-bold text-lg py-1 rounded-t-sm !print-color-adjust-exact"
                         style={{ backgroundColor: '#374151', color: '#ffffff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
                     >
                         オプション
@@ -468,6 +468,10 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
 
                 </div>
+            </div>
+            {/* Footer Serial Number (Outside main container, positioned absolute relative to page) */}
+            <div className="absolute bottom-4 left-12 text-[10px] text-gray-400 font-mono tracking-widest !print-color-adjust-exact">
+                {estimateId ? String(estimateId).padStart(6, '0') : ''}
             </div>
         </div>
     );

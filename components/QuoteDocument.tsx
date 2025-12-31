@@ -298,7 +298,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                     <div className="mt-1">
                         <h2 className="text-lg font-bold mb-1.5 border-l-4 border-purple-600 pl-2">選択されたプラン</h2>
                         <div className="border border-purple-800 rounded-lg overflow-hidden">
-                            <div className="bg-purple-700 text-white font-bold p-2 text-center text-lg !print-color-adjust-exact">
+                            <div className="bg-purple-700 text-white font-bold p-2 text-left pl-4 text-lg !print-color-adjust-exact">
                                 {plan.name}
                             </div>
                             <div className="p-3 bg-purple-50 flex items-center justify-center">
@@ -345,7 +345,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                     src="/images/stamp.png"
                                     alt="Stamp"
                                     className="absolute object-contain opacity-80 z-10"
-                                    style={{ width: '40px', height: '40px', right: '-60px', top: '10px' }}
+                                    style={{ width: '40px', height: '40px', right: '-10px', top: '10px' }}
                                 />
                             </div>
                         </div>

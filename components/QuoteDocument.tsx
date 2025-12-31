@@ -217,11 +217,11 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             {/* Birth Date */}
                             <div className="flex border-b border-gray-400 h-10">
                                 <LabelCell>生年月日</LabelCell>
-                                <ValueCell className="justify-end">
+                                <ValueCell className="justify-end gap-8">
                                     {customerInfo?.birthDate ? (
-                                        <span className="mr-8">{customerInfo.birthDate}</span>
+                                        <span>{customerInfo.birthDate}</span>
                                     ) : (
-                                        <span className="text-gray-300 tracking-widest mr-4">　　年　　月　　日</span>
+                                        <span className="text-gray-300 tracking-widest">　　年　　月　　日</span>
                                     )}
                                     <span>{customerInfo?.age ? `${customerInfo.age} 才` : ''}</span>
                                 </ValueCell>

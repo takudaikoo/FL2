@@ -38,6 +38,11 @@ const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('home');
   const [isSaving, setIsSaving] = useState(false);
 
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Logo Toggle State
+  const [logoType, setLogoType] = useState<'FL' | 'LS'>('FL');
+
   // Supabase data
   const [plans, setPlans] = useState<Plan[]>([]);
   const [items, setItems] = useState<Item[]>([]);
@@ -239,6 +244,10 @@ const App: React.FC = () => {
     setViewMode('home');
   };
 
+  const toggleLogo = () => {
+    setLogoType(prev => prev === 'FL' ? 'LS' : 'FL');
+  };
+
   const handleSaveAndPrint = async (customerInfo: CustomerInfo) => {
     if (!currentPlan) return;
 
@@ -357,13 +366,6 @@ const App: React.FC = () => {
       />
     );
   }
-
-  // Logo Toggle State
-  const [logoType, setLogoType] = useState<'FL' | 'LS'>('FL');
-
-  const toggleLogo = () => {
-    setLogoType(prev => prev === 'FL' ? 'LS' : 'FL');
-  };
 
   // Home View
   return (

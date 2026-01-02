@@ -205,28 +205,30 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
 
             {/* Main Table */}
             <div className="mb-8" style={{ marginTop: '50px' }}>
-                {/* Table Header */}
-                <div className="flex border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold !print-color-adjust-exact">
-                    <div className="flex-1 text-left">内訳 / 項目名</div>
-                    <div className="w-[20%] text-center">詳細</div>
-                    <div className="flex-1 text-right">金額 (税抜)</div>
-                </div>
+                <div className="border border-black text-sm">
+                    {/* Table Header */}
+                    <div className="flex bg-gray-100 font-bold border-b border-black !print-color-adjust-exact">
+                        <div className="flex-1 text-left py-1 px-2 border-r border-black">内訳 / 項目名</div>
+                        <div className="w-[20%] text-center py-1 px-2 border-r border-black">詳細</div>
+                        <div className="flex-1 text-right py-1 px-2">金額 (税抜)</div>
+                    </div>
 
-                {/* Table Body */}
-                <div className="text-sm border-b border-black">
-                    {allRows.map((row, index) => (
-                        <div key={index} className="flex py-2 border-b border-gray-100 last:border-0">
-                            <div className="flex-1 text-left truncate pr-2">
-                                {row.name}
+                    {/* Table Body */}
+                    <div>
+                        {allRows.map((row, index) => (
+                            <div key={index} className="flex border-b border-black last:border-0">
+                                <div className="flex-1 text-left py-2 px-2 border-r border-black truncate">
+                                    {row.name}
+                                </div>
+                                <div className="w-[20%] text-center py-2 px-2 border-r border-black truncate text-gray-600">
+                                    {row.detail}
+                                </div>
+                                <div className="flex-1 text-right py-2 px-2 font-mono">
+                                    ¥{row.price.toLocaleString()}
+                                </div>
                             </div>
-                            <div className="w-[20%] text-center truncate px-1 text-gray-600">
-                                {row.detail}
-                            </div>
-                            <div className="flex-1 text-right font-mono">
-                                ¥{row.price.toLocaleString()}
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
                 {/* Subtotal / Tax / Total Calculation (Right aligned below table) */}

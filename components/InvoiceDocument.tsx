@@ -164,7 +164,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                 <div className="text-sm mb-4">
                     下記のとおりご請求申し上げます。
                 </div>
-                <div className="border-b-2 border-black inline-block pr-12 pb-2">
+                <div className="border-b-2 border-black inline-block pr-12 pb-2 bg-gray-100 px-4 !print-color-adjust-exact">
                     <span className="font-bold text-lg mr-6">ご請求金額</span>
                     <span className="font-bold text-3xl font-mono">¥{totalWithTax.toLocaleString()} -</span>
                     <span className="text-sm ml-2">(税込)</span>

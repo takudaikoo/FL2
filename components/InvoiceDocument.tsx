@@ -231,4 +231,4 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
 };
 
 export default InvoiceDocument;
-```
+

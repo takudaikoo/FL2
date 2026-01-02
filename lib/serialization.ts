@@ -64,6 +64,7 @@ export const deserializePrintData = (json: string): {
     customerInfo?: any;
     estimateId?: number;
     logoType?: 'FL' | 'LS';
+    documentType?: 'quote' | 'invoice';
 } | null => {
     try {
         const data: PrintData = JSON.parse(json);
@@ -80,6 +81,7 @@ export const deserializePrintData = (json: string): {
             customerInfo: data.customerInfo,
             estimateId: data.estimateId,
             logoType: data.logoType,
+            documentType: data.documentType,
         };
     } catch (e) {
         console.error('Failed to parse print data:', e);

@@ -106,9 +106,9 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
     return (
         <div
             id="invoice-document"
-            className="w-[210mm] h-[297mm] bg-white text-gray-900 overflow-hidden relative leading-relaxed"
+            className="w-[210mm] h-[297mm] bg-white text-gray-900 overflow-hidden relative leading-relaxed flex flex-col"
             style={{
-                padding: '20mm',
+                padding: '15mm 20mm',
                 boxSizing: 'border-box',
                 fontFamily: '"Yu Mincho", "YuMincho", serif',
                 WebkitPrintColorAdjust: 'exact',
@@ -116,120 +116,114 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             }}
         >
             {/* Header */}
-            <h1 className="text-3xl font-bold text-center border-b-2 border-black pb-2 mb-12 tracking-widest">
-                請 求 書
+            <h1 className="text-3xl font-bold text-center border-b-2 border-black pb-2 mb-8 tracking-widest">
+                ご 請 求 書
             </h1>
 
-            {/* Top Info Grid */}
-            <div className="flex justify-between items-start mb-12">
+            {/* Issue Date (Right aligned) */}
+            <div className="text-right mb-12">
+                <div className="text-sm">発行日: {formattedDate}</div>
+            </div>
 
-                {/* Left: Customer Info */}
-                <div className="flex-1 mr-8">
-                    <div className="border-b border-black text-xl font-bold pb-1 mb-4">
-                        {customerInfo?.applicantName || '　　　　'} 様
-                    </div>
-                    <div className="text-sm leading-loose">
-                        <div>〒{customerInfo?.address?.split(' ')[0]?.replace('〒', '') || '　　-　　'}</div>
-                        <div>{customerInfo?.address?.split(' ').slice(1).join(' ') || ''}</div>
-                        <div className="mt-2">電話番号: {customerInfo?.chiefMournerMobile || customerInfo?.chiefMournerPhone || ''}</div>
-                    </div>
-                    <div className="mt-8 text-sm">
-                        下記のとおりご請求申し上げます。
-                    </div>
-                    <div className="mt-4 border-b-2 border-black inline-block pr-12 pb-1">
-                        <span className="font-bold text-lg mr-4">ご請求金額</span>
-                        <span className="font-bold text-2xl font-mono">¥{totalWithTax.toLocaleString()} -</span>
-                        <span className="text-xs ml-2">(税込)</span>
-                    </div>
+            {/* Customer Info (Left) */}
+            <div className="mb-12">
+                <div className="text-sm leading-loose">
+                    <div>〒{customerInfo?.address?.split(' ')[0]?.replace('〒', '') || '　　-　　'}</div>
+                    <div className="text-lg">{customerInfo?.address?.split(' ').slice(1).join(' ') || ''}</div>
                 </div>
+                <div className="text-2xl font-bold mt-2 border-b border-black inline-block pr-12 pb-1">
+                    {customerInfo?.applicantName || '　　　　'} 様
+                </div>
+                <div className="mt-2 text-sm">
+                    電話番号: {customerInfo?.chiefMournerMobile || customerInfo?.chiefMournerPhone || ''}
+                </div>
+            </div>
 
-                {/* Right: Company Info */}
-                <div className="w-[80mm]">
-                    <div className="text-right mb-4">
-                        <div className="text-sm">発行日: {formattedDate}</div>
-                        <div className="text-sm">番号: {estimateId ? String(estimateId).padStart(6, '0') : ''}</div>
-                    </div>
-
-                    <div className="relative">
-                        <div className="font-bold text-lg mb-1">{info.name}</div>
-                        <div className="text-xs leading-relaxed">
-                            <div>{info.address}</div>
-                            <div>{info.contact}</div>
-                            <div className="mt-1">{info.rep}</div>
-                        </div>
-                        {/* Stamp */}
-                        {info.stamp && (
-                            <img
-                                src={info.stamp}
-                                alt="Stamp"
-                                className="absolute object-contain opacity-80"
-                                style={{ width: '50px', height: '50px', right: '0px', top: '10px' }}
-                            />
-                        )}
-                        {/* Logo if needed, maybe smaller or standard */}
-                        {/* <div className="absolute -top-4 -left-16 w-12 opacity-50">
-                            <img src={info.logo} alt="logo" />
-                        </div> */}
-                    </div>
+            {/* Billing Statement & Total */}
+            <div className="mb-12">
+                <div className="text-sm mb-4">
+                    下記のとおりご請求申し上げます。
+                </div>
+                <div className="border-b-2 border-black inline-block pr-12 pb-2">
+                    <span className="font-bold text-lg mr-6">ご請求金額</span>
+                    <span className="font-bold text-3xl font-mono">¥{totalWithTax.toLocaleString()} -</span>
+                    <span className="text-sm ml-2">(税込)</span>
                 </div>
             </div>
 
             {/* Main Table */}
-            <div className="border-t border-black mb-8">
+            <div className="mb-8">
                 {/* Table Header */}
-                <div className="flex border-b border-black bg-gray-100 py-1 text-sm font-bold text-center !print-color-adjust-exact">
-                    <div className="flex-1 border-r border-gray-300">内訳 / 項目名</div>
-                    <div className="w-[150px]">金額 (税抜)</div>
+                <div className="flex border-b border-black py-1 text-sm font-bold !print-color-adjust-exact">
+                    <div className="flex-1">内訳 / 項目名</div>
+                    <div className="w-[150px] text-right">金額 (税抜)</div>
                 </div>
 
                 {/* Table Body */}
-                <div className="text-sm">
+                <div className="text-sm border-b border-black">
                     {allRows.map((row, index) => (
-                        <div key={index} className="flex border-b border-gray-200 py-2">
-                            <div className="flex-1 px-4 border-r border-gray-200 truncate">
+                        <div key={index} className="flex py-2 border-b border-gray-100 last:border-0">
+                            <div className="flex-1 truncate pr-4">
                                 {row.name}
                             </div>
-                            <div className="w-[150px] px-4 text-right font-mono">
+                            <div className="w-[150px] text-right font-mono">
                                 ¥{row.price.toLocaleString()}
                             </div>
                         </div>
                     ))}
-                    {/* Filler rows to maintain height if needed, OR just whitespace */}
-                    {/* For Invoice, usually dynamic height is fine unless we want to push Footer to bottom. */}
-                    {/* Let's use a minimum height or flex-grow spacer */}
-                </div>
-            </div>
-
-            {/* Totals & Bank Info */}
-            <div className="flex justify-between items-start mt-auto pt-4">
-
-                {/* Left: Bank Info */}
-                <div className="border border-gray-400 p-4 rounded-sm w-[60%] text-sm">
-                    <div className="font-bold border-b border-gray-300 mb-2 pb-1 text-center bg-gray-100 !print-color-adjust-exact">お振込先</div>
-                    <div className="whitespace-pre-wrap leading-relaxed">
-                        {info.bankInfo}
-                    </div>
-                    <div className="mt-4 text-xs text-gray-500">
-                        <p>※お振込手数料はお客様負担にてお願いいたします。</p>
-                        <p>※お支払期限: <span className="font-bold text-gray-800">{formattedDeadline}</span></p>
-                    </div>
                 </div>
 
-                {/* Right: Calculation */}
-                <div className="w-[35%]">
-                    <div className="flex justify-between border-b border-gray-300 py-1">
-                        <span className="text-sm">小計 (税抜)</span>
+                {/* Subtotal / Tax / Total Calculation (Right aligned below table) */}
+                <div className="flex flex-col items-end mt-4 text-sm">
+                    <div className="flex justify-between w-[250px] border-b border-gray-300 py-1">
+                        <span>小計 (税抜)</span>
                         <span className="font-mono">¥{totalCost.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between border-b border-gray-300 py-1">
-                        <span className="text-sm">消費税 (10%)</span>
+                    <div className="flex justify-between w-[250px] border-b border-gray-300 py-1">
+                        <span>消費税 (10%)</span>
                         <span className="font-mono">¥{totalTax.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between border-b-2 border-black py-2 font-bold text-lg mt-1">
-                        <span>ご請求金額</span>
+                    <div className="flex justify-between w-[250px] border-b-2 border-black py-2 font-bold">
+                        <span>合計 (税込み)</span>
                         <span className="font-mono">¥{totalWithTax.toLocaleString()}</span>
                     </div>
                 </div>
+            </div>
+
+            {/* Spacer (Flexible) */}
+            <div className="flex-1 min-h-[20px]"></div>
+
+            {/* Bank Info */}
+            <div className="mb-12">
+                <div className="font-bold text-sm mb-2 border-l-4 border-black pl-2">お振込先</div>
+                <div className="ml-4 text-sm leading-relaxed">
+                    <div className="whitespace-pre-wrap font-medium text-base mb-2">
+                        {info.bankInfo}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                        <p>※お振込手数料はお客様負担にてお願いいたします。</p>
+                        <p className="mt-1">※お支払期限: <span className="font-bold text-black text-sm">{formattedDeadline}</span></p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Company Info (Bottom Right) */}
+            <div className="relative ml-auto w-[60%] text-right">
+                <div className="font-bold text-lg mb-1">{info.name}</div>
+                <div className="text-xs leading-relaxed text-gray-600">
+                    <div>{info.address}</div>
+                    <div>{info.contact}</div>
+                    <div className="mt-1">{info.rep}</div>
+                </div>
+                {/* Stamp */}
+                {info.stamp && (
+                    <img
+                        src={info.stamp}
+                        alt="Stamp"
+                        className="absolute object-contain opacity-80"
+                        style={{ width: '60px', height: '60px', right: '0px', top: '10px' }}
+                    />
+                )}
             </div>
 
         </div>
@@ -237,3 +231,4 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
 };
 
 export default InvoiceDocument;
+```

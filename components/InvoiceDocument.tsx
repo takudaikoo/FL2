@@ -140,7 +140,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                         お客様情報
                     </div>
 
-                    <div className="pl-4">
+                    <div className="px-2">
                         {/* Address */}
                         <div className="mb-3">
                             <div className="text-xs text-gray-500 mb-0.5">ご住所</div>

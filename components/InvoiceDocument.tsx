@@ -145,8 +145,8 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                         <div className="mb-3">
                             <div className="text-xs text-gray-500 mb-0.5">ご住所</div>
                             <div className="text-sm leading-relaxed">
-                                〒{customerInfo?.address?.split(' ')[0]?.replace('〒', '') || '　　-　　'}
-                                <span className="ml-4">{customerInfo?.address?.split(' ').slice(1).join(' ') || ''}</span>
+                                <div>〒{customerInfo?.address?.split(' ')[0]?.replace('〒', '') || '　　-　　'}</div>
+                                <div className="mt-1">{customerInfo?.address?.split(' ').slice(1).join(' ') || ''}</div>
                             </div>
                         </div>
 

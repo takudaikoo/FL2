@@ -126,16 +126,36 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Customer Info (Left) */}
-            <div className="mb-12">
-                <div className="text-sm leading-loose">
-                    <div>〒{customerInfo?.address?.split(' ')[0]?.replace('〒', '') || '　　-　　'}</div>
-                    <div className="text-lg">{customerInfo?.address?.split(' ').slice(1).join(' ') || ''}</div>
+            <div className="mb-8">
+                <div className="border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold mb-4 !print-color-adjust-exact">
+                    お客様情報
                 </div>
-                <div className="text-2xl font-bold mt-2 border-b border-black inline-block pr-12 pb-1">
-                    {customerInfo?.applicantName || '　　　　'} 様
-                </div>
-                <div className="mt-2 text-sm">
-                    電話番号: {customerInfo?.chiefMournerMobile || customerInfo?.chiefMournerPhone || ''}
+
+                <div className="pl-4">
+                    {/* Address */}
+                    <div className="mb-3">
+                        <div className="text-xs text-gray-500 mb-0.5">ご住所</div>
+                        <div className="text-sm leading-relaxed">
+                            〒{customerInfo?.address?.split(' ')[0]?.replace('〒', '') || '　　-　　'}
+                            <span className="ml-4">{customerInfo?.address?.split(' ').slice(1).join(' ') || ''}</span>
+                        </div>
+                    </div>
+
+                    {/* Applicant Name */}
+                    <div className="mb-3">
+                        <div className="text-xs text-gray-500 mb-0.5">お申込者</div>
+                        <div className="text-xl font-bold border-b border-black inline-block pr-12 pb-1">
+                            {customerInfo?.applicantName || '　　　　'} 様
+                        </div>
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                        <div className="text-xs text-gray-500 mb-0.5">お電話番号</div>
+                        <div className="text-sm">
+                            {customerInfo?.chiefMournerMobile || customerInfo?.chiefMournerPhone || ''}
+                        </div>
+                    </div>
                 </div>
             </div>
 

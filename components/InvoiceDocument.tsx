@@ -236,6 +236,9 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                     <div>{info.address}</div>
                     <div>{info.contact}</div>
                     <div className="mt-1">{info.rep}</div>
+                    {(info as any).registrationNumber && (
+                        <div className="mt-1 text-[10px] text-gray-500">事業者登録番号: {(info as any).registrationNumber}</div>
+                    )}
                 </div>
                 {/* Stamp */}
                 {info.stamp && (

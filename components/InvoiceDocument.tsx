@@ -198,7 +198,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Main Table */}
-            <div className="mb-8" style={{ marginTop: '80px' }}>
+            <div className="mb-8" style={{ marginTop: '50px' }}>
                 {/* Table Header */}
                 <div className="flex border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold !print-color-adjust-exact">
                     <div className="flex-1">内訳 / 項目名</div>

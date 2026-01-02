@@ -120,42 +120,65 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                 ご 請 求 書
             </h1>
 
-            {/* Issue Date (Right aligned) */}
-            <div className="text-right mb-12">
-                <div className="text-sm">発行日: {formattedDate}</div>
-            </div>
+            {/* Top Layout: Customer Info vs Company Info */}
+            <div className="flex justify-between items-start mb-8" style={{ marginTop: '60px' }}>
 
-            {/* Customer Info (Left) */}
-            <div className="mb-8" style={{ marginTop: '60px' }}>
-                <div className="border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold mb-4 !print-color-adjust-exact">
-                    お客様情報
+                {/* Left: Customer Info (55%) */}
+                <div className="w-[55%]">
+                    <div className="border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold mb-4 !print-color-adjust-exact">
+                        お客様情報
+                    </div>
+
+                    <div className="pl-4">
+                        {/* Address */}
+                        <div className="mb-3">
+                            <div className="text-xs text-gray-500 mb-0.5">ご住所</div>
+                            <div className="text-sm leading-relaxed">
+                                〒{customerInfo?.address?.split(' ')[0]?.replace('〒', '') || '　　-　　'}
+                                <span className="ml-4">{customerInfo?.address?.split(' ').slice(1).join(' ') || ''}</span>
+                            </div>
+                        </div>
+
+                        {/* Applicant Name */}
+                        <div className="mb-3">
+                            <div className="text-xs text-gray-500 mb-0.5">お申込者</div>
+                            <div className="text-xl font-bold border-b border-black inline-block pr-12 pb-1">
+                                {customerInfo?.applicantName || '　　　　'} 様
+                            </div>
+                        </div>
+
+                        {/* Phone */}
+                        <div>
+                            <div className="text-xs text-gray-500 mb-0.5">お電話番号</div>
+                            <div className="text-sm">
+                                {customerInfo?.chiefMournerMobile || customerInfo?.chiefMournerPhone || ''}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="pl-4">
-                    {/* Address */}
-                    <div className="mb-3">
-                        <div className="text-xs text-gray-500 mb-0.5">ご住所</div>
-                        <div className="text-sm leading-relaxed">
-                            〒{customerInfo?.address?.split(' ')[0]?.replace('〒', '') || '　　-　　'}
-                            <span className="ml-4">{customerInfo?.address?.split(' ').slice(1).join(' ') || ''}</span>
-                        </div>
-                    </div>
+                {/* Right: Date & Company Info (40%) */}
+                <div className="w-[40%] text-right relative">
+                    <div className="text-sm mb-6">発行日: {formattedDate}</div>
 
-                    {/* Applicant Name */}
-                    <div className="mb-3">
-                        <div className="text-xs text-gray-500 mb-0.5">お申込者</div>
-                        <div className="text-xl font-bold border-b border-black inline-block pr-12 pb-1">
-                            {customerInfo?.applicantName || '　　　　'} 様
-                        </div>
+                    <div className="font-bold text-lg mb-1">{info.name}</div>
+                    <div className="text-xs leading-relaxed text-gray-600">
+                        <div>{info.address}</div>
+                        <div>{info.contact}</div>
+                        <div className="mt-1">{info.rep}</div>
+                        {(info as any).registrationNumber && (
+                            <div className="mt-1 text-[10px] text-gray-500">事業者登録番号: {(info as any).registrationNumber}</div>
+                        )}
                     </div>
-
-                    {/* Phone */}
-                    <div>
-                        <div className="text-xs text-gray-500 mb-0.5">お電話番号</div>
-                        <div className="text-sm">
-                            {customerInfo?.chiefMournerMobile || customerInfo?.chiefMournerPhone || ''}
-                        </div>
-                    </div>
+                    {/* Stamp */}
+                    {info.stamp && (
+                        <img
+                            src={info.stamp}
+                            alt="Stamp"
+                            className="absolute object-contain opacity-80"
+                            style={{ width: '60px', height: '60px', right: '0px', top: '40px' }} // Adjusted top for position relative to container
+                        />
+                    )}
                 </div>
             </div>
 
@@ -227,28 +250,6 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                         <p className="mt-1">※お支払期限: <span className="font-bold text-black text-sm">{formattedDeadline}</span></p>
                     </div>
                 </div>
-            </div>
-
-            {/* Company Info (Bottom Right) */}
-            <div className="relative ml-auto w-[60%] text-right">
-                <div className="font-bold text-lg mb-1">{info.name}</div>
-                <div className="text-xs leading-relaxed text-gray-600">
-                    <div>{info.address}</div>
-                    <div>{info.contact}</div>
-                    <div className="mt-1">{info.rep}</div>
-                    {(info as any).registrationNumber && (
-                        <div className="mt-1 text-[10px] text-gray-500">事業者登録番号: {(info as any).registrationNumber}</div>
-                    )}
-                </div>
-                {/* Stamp */}
-                {info.stamp && (
-                    <img
-                        src={info.stamp}
-                        alt="Stamp"
-                        className="absolute object-contain opacity-80"
-                        style={{ width: '60px', height: '60px', right: '0px', top: '10px' }}
-                    />
-                )}
             </div>
 
         </div>

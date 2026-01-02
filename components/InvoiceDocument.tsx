@@ -126,7 +126,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Customer Info (Left) */}
-            <div className="mb-8">
+            <div className="mb-8 mt-16">
                 <div className="border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold mb-4 !print-color-adjust-exact">
                     お客様情報
                 </div>
@@ -172,7 +172,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Main Table */}
-            <div className="mb-8 mt-12">
+            <div className="mb-8 mt-20">
                 {/* Table Header */}
                 <div className="flex border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold !print-color-adjust-exact">
                     <div className="flex-1">内訳 / 項目名</div>

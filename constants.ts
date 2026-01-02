@@ -251,7 +251,7 @@ export const COMPANY_INFO = {
     rep: '代表取締役 大石康太',
     stamp: '/images/stamp.png',
     logo: '/images/logo.png',
-    bankInfo: '湘南信用金庫　小和田支店　普通　０１６０３７８\nカ）ファーストリーフ'
+    bankInfo: '湘南信用金庫　小和田支店\n普通　０１６０３７８\nカ）ファーストリーフ'
   },
   LS: {
     name: '株式会社 リンクサービス',
@@ -260,6 +260,6 @@ export const COMPANY_INFO = {
     rep: '代表取締役　菅野 大輝',
     stamp: null,
     logo: '/images/logoLS2.png',
-    bankInfo: 'かながわ信用金庫　遠藤支店　普通　０１３５８０５\nカ）リンクサービス'
+    bankInfo: 'かながわ信用金庫　遠藤支店\n普通　０１３５８０５\nカ）リンクサービス'
   }
 };

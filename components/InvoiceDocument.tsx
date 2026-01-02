@@ -126,7 +126,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Customer Info (Left) */}
-            <div className="mb-8 mt-16">
+            <div className="mb-8" style={{ marginTop: '60px' }}>
                 <div className="border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold mb-4 !print-color-adjust-exact">
                     お客様情報
                 </div>
@@ -160,7 +160,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Billing Statement & Total */}
-            <div className="mb-12 mt-8">
+            <div className="mb-12" style={{ marginTop: '40px' }}>
                 <div className="text-sm mb-4">
                     下記のとおりご請求申し上げます。
                 </div>
@@ -172,7 +172,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Main Table */}
-            <div className="mb-8 mt-20">
+            <div className="mb-8" style={{ marginTop: '80px' }}>
                 {/* Table Header */}
                 <div className="flex border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold !print-color-adjust-exact">
                     <div className="flex-1">内訳 / 項目名</div>
@@ -214,11 +214,13 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             <div className="flex-1 min-h-[20px]"></div>
 
             {/* Bank Info */}
-            <div className="mb-12 mt-8">
+            <div className="mb-12" style={{ marginTop: '40px' }}>
                 <div className="border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold mb-2 !print-color-adjust-exact">お振込先</div>
                 <div className="ml-4 text-sm leading-relaxed">
-                    <div className="whitespace-pre-wrap font-medium text-base mb-2">
-                        {info.bankInfo}
+                    <div className="font-medium text-base mb-2">
+                        {info.bankInfo.split('\n').map((line, i) => (
+                            <div key={i}>{line}</div>
+                        ))}
                     </div>
                     <div className="text-xs text-gray-500">
                         <p>※お振込手数料はお客様負担にてお願いいたします。</p>

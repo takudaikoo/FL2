@@ -89,17 +89,23 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
     });
 
     // Main rows
-    const rows = displayItems.map(item => ({
-        name: item.name,
-        price: getItemPrice(item)
-    }));
+    const rows = displayItems.map(item => {
+        let detail = '';
+        if (item.type === 'dropdown' && item.options) {
+            const gradeId = selectedGrades.get(item.id);
+            const option = item.options.find(o => o.id === gradeId);
+            if (option) detail = option.name;
+        }
+        return {
+            name: item.name,
+            price: getItemPrice(item),
+            detail
+        };
+    });
 
-    // Add Base Plan Row at the top if needed? 
-    // QuoteDocument has "Basic Plan" section separately. 
-    // For Invoice, usually valid to list it as an item.
-    // Let's add the Plan as the first item manually.
+    // Add Base Plan Row at the top
     const allRows = [
-        { name: `基本プラン (${plan.name})`, price: plan.price },
+        { name: `基本プラン (${plan.name})`, price: plan.price, detail: '' },
         ...rows
     ];
 
@@ -202,7 +208,8 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                 {/* Table Header */}
                 <div className="flex border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold !print-color-adjust-exact">
                     <div className="flex-1">内訳 / 項目名</div>
-                    <div className="w-[150px] text-right">金額 (税抜)</div>
+                    <div className="w-[160px] text-center">詳細</div>
+                    <div className="w-[160px] text-right">金額 (税抜)</div>
                 </div>
 
                 {/* Table Body */}
@@ -212,7 +219,10 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                             <div className="flex-1 truncate pr-4">
                                 {row.name}
                             </div>
-                            <div className="w-[150px] text-right font-mono">
+                            <div className="w-[160px] text-center truncate px-2 text-gray-600">
+                                {row.detail}
+                            </div>
+                            <div className="w-[160px] text-right font-mono">
                                 ¥{row.price.toLocaleString()}
                             </div>
                         </div>

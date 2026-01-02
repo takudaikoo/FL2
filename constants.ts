@@ -258,7 +258,7 @@ export const COMPANY_INFO = {
     address: '〒251-0861 神奈川県藤沢市大庭5135-13',
     contact: 'TEL: 0466-52-6896 / FAX: 0466-52-6904',
     rep: '代表取締役　菅野 大輝',
-    stamp: '/images/LSstamp.jpg',
+    stamp: '/images/LSstamp.png',
     logo: '/images/logoLS2.png',
     bankInfo: '横浜銀行　藤沢中央支店\n普通　６２９７７２０\nカ）リンクサービス',
     registrationNumber: 'T1021001077363'

@@ -246,7 +246,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                         src={info.stamp}
                         alt="Stamp"
                         className="absolute object-contain opacity-80"
-                        style={{ width: '60px', height: '60px', right: '0px', top: '10px', mixBlendMode: 'multiply' }}
+                        style={{ width: '60px', height: '60px', right: '0px', top: '10px' }}
                     />
                 )}
             </div>

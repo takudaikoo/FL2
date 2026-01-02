@@ -120,8 +120,13 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                 ご 請 求 書
             </h1>
 
+            {/* Issue Date (Right aligned) */}
+            <div className="text-right mb-4">
+                <div className="text-sm">発行日: {formattedDate}</div>
+            </div>
+
             {/* Top Layout: Customer Info vs Company Info */}
-            <div className="flex justify-between items-start mb-8" style={{ marginTop: '60px' }}>
+            <div className="flex justify-between items-start mb-8" style={{ marginTop: '40px' }}>
 
                 {/* Left: Customer Info (55%) */}
                 <div className="w-[55%]">
@@ -157,10 +162,8 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                     </div>
                 </div>
 
-                {/* Right: Date & Company Info (40%) */}
+                {/* Right: Company Info (40%) */}
                 <div className="w-[40%] text-right relative">
-                    <div className="text-sm mb-6">発行日: {formattedDate}</div>
-
                     <div className="font-bold text-lg mb-1">{info.name}</div>
                     <div className="text-xs leading-relaxed text-gray-600">
                         <div>{info.address}</div>
@@ -176,7 +179,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                             src={info.stamp}
                             alt="Stamp"
                             className="absolute object-contain opacity-80"
-                            style={{ width: '60px', height: '60px', right: '0px', top: '40px' }} // Adjusted top for position relative to container
+                            style={{ width: '60px', height: '60px', right: '0px', top: '10px' }}
                         />
                     )}
                 </div>

@@ -207,22 +207,22 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             <div className="mb-8" style={{ marginTop: '50px' }}>
                 {/* Table Header */}
                 <div className="flex border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold !print-color-adjust-exact">
-                    <div className="flex-1">内訳 / 項目名</div>
-                    <div className="w-[160px] text-center">詳細</div>
-                    <div className="w-[160px] text-right">金額 (税抜)</div>
+                    <div className="w-[40%]">内訳 / 項目名</div>
+                    <div className="w-[20%] text-center">詳細</div>
+                    <div className="w-[40%] text-right">金額 (税抜)</div>
                 </div>
 
                 {/* Table Body */}
                 <div className="text-sm border-b border-black">
                     {allRows.map((row, index) => (
                         <div key={index} className="flex py-2 border-b border-gray-100 last:border-0">
-                            <div className="flex-1 truncate pr-4">
+                            <div className="w-[40%] truncate pr-2">
                                 {row.name}
                             </div>
-                            <div className="w-[160px] text-center truncate px-2 text-gray-600">
+                            <div className="w-[20%] text-center truncate px-1 text-gray-600">
                                 {row.detail}
                             </div>
-                            <div className="w-[160px] text-right font-mono">
+                            <div className="w-[40%] text-right font-mono">
                                 ¥{row.price.toLocaleString()}
                             </div>
                         </div>

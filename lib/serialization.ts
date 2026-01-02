@@ -13,6 +13,7 @@ export interface PrintData {
     customerInfo?: any; // strict typing later if needed, avoiding circular imports annoyance for now or just import types
     estimateId?: number;
     logoType?: 'FL' | 'LS';
+    documentType?: 'quote' | 'invoice';
 }
 
 
@@ -29,7 +30,8 @@ export const serializePrintData = (
     attendeeLabel: string,
     customerInfo?: any,
     estimateId?: number,
-    logoType?: 'FL' | 'LS'
+    logoType?: 'FL' | 'LS',
+    documentType: 'quote' | 'invoice' = 'quote'
 ): string => {
     const data: PrintData = {
         plan,
@@ -44,6 +46,7 @@ export const serializePrintData = (
         customerInfo,
         estimateId,
         logoType,
+        documentType
     };
     return JSON.stringify(data);
 };

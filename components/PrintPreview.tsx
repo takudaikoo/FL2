@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import QuoteDocument from './QuoteDocument';
+import InvoiceDocument from './InvoiceDocument';
 import { deserializePrintData } from '../lib/serialization';
 import { Plan, Item, AttendeeTier } from '../types';
 
@@ -17,6 +18,7 @@ const PrintPreview: React.FC = () => {
         customerInfo?: any;
         estimateId?: number;
         logoType?: 'FL' | 'LS';
+        documentType?: 'quote' | 'invoice';
     } | null>(null);
 
     useEffect(() => {
@@ -42,7 +44,7 @@ const PrintPreview: React.FC = () => {
         <div className="min-h-screen bg-gray-500 flex flex-col items-center py-8 print:bg-white print:py-0 print:block">
             {/* Control Bar (Hidden in Print) */}
             <div className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur shadow-md p-4 flex justify-between items-center print:hidden z-50">
-                <h1 className="font-bold text-gray-700">印刷プレビュー</h1>
+                <h1 className="font-bold text-gray-700">印刷プレビュー ({data.documentType === 'invoice' ? '請求書' : '見積書'})</h1>
                 <div className="flex gap-4">
                     <button
                         onClick={() => window.close()}
@@ -64,20 +66,37 @@ const PrintPreview: React.FC = () => {
 
             {/* A4 Container */}
             <div className="bg-white shadow-2xl print:shadow-none mx-auto print:mx-0 print:w-full">
-                <QuoteDocument
-                    plan={data.plan}
-                    items={data.items}
-                    selectedOptions={data.selectedOptions}
-                    selectedGrades={data.selectedGrades}
-                    attendeeTier={data.attendeeTier}
-                    customAttendeeCount={data.customAttendeeCount}
-                    freeInputValues={data.freeInputValues}
-                    totalCost={data.totalCost}
-                    attendeeLabel={data.attendeeLabel}
-                    customerInfo={data.customerInfo}
-                    estimateId={data.estimateId}
-                    logoType={data.logoType || 'FL'}
-                />
+                {data.documentType === 'invoice' ? (
+                    <InvoiceDocument
+                        plan={data.plan}
+                        items={data.items}
+                        selectedOptions={data.selectedOptions}
+                        selectedGrades={data.selectedGrades}
+                        attendeeTier={data.attendeeTier}
+                        customAttendeeCount={data.customAttendeeCount}
+                        freeInputValues={data.freeInputValues}
+                        totalCost={data.totalCost}
+                        attendeeLabel={data.attendeeLabel}
+                        customerInfo={data.customerInfo}
+                        estimateId={data.estimateId}
+                        logoType={data.logoType || 'FL'}
+                    />
+                ) : (
+                    <QuoteDocument
+                        plan={data.plan}
+                        items={data.items}
+                        selectedOptions={data.selectedOptions}
+                        selectedGrades={data.selectedGrades}
+                        attendeeTier={data.attendeeTier}
+                        customAttendeeCount={data.customAttendeeCount}
+                        freeInputValues={data.freeInputValues}
+                        totalCost={data.totalCost}
+                        attendeeLabel={data.attendeeLabel}
+                        customerInfo={data.customerInfo}
+                        estimateId={data.estimateId}
+                        logoType={data.logoType || 'FL'}
+                    />
+                )}
             </div>
 
             <style>{`

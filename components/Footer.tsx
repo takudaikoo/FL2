@@ -5,9 +5,10 @@ interface FooterProps {
   total: number;
   onInputClick: () => void;
   onOutputClick: () => void;
+  onInvoiceClick: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ total, onInputClick, onOutputClick }) => {
+const Footer: React.FC<FooterProps> = ({ total, onInputClick, onOutputClick, onInvoiceClick }) => {
   return (
     <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] py-5 px-8 z-40 print:hidden">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -31,6 +32,15 @@ const Footer: React.FC<FooterProps> = ({ total, onInputClick, onOutputClick }) =
           >
             <Printer size={28} />
             <span>見積書出力</span>
+          </button>
+
+          {/* Invoice Output Button */}
+          <button
+            onClick={onInvoiceClick}
+            className="flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-full font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0"
+          >
+            <Printer size={28} />
+            <span>請求書出力</span>
           </button>
         </div>
       </div>

@@ -283,6 +283,41 @@ const App: React.FC = () => {
     await handleSaveAndPrint(emptyCustomerInfo);
   };
 
+  const handleInvoiceClick = async () => {
+    if (!currentPlan) {
+      alert('プランが選択されていません。');
+      return;
+    }
+
+    // Same as output click, use empty info if needed or current loaded info?
+    // User requirement says "based on current estimate data". 
+    // If we are in input mode, we have data. If in home mode, we might not have user input.
+    // But typically invoice needs a name. 
+    // If loadedCustomerInfo exists, use it. If not, maybe use empty.
+
+    const infoToUse = loadedCustomerInfo || {
+      deathDate: '',
+      deceasedName: '',
+      birthDate: '',
+      age: '',
+      address: '',
+      honseki: '',
+      applicantName: '',
+      applicantRelation: '',
+      applicantBirthDate: '',
+      chiefMournerName: '',
+      chiefMournerAddress: '',
+      chiefMournerPhone: '',
+      chiefMournerMobile: '',
+      religion: '',
+      templeName: '',
+      templePhone: '',
+      templeFax: ''
+    };
+
+    await handleSaveAndPrint(infoToUse, 'invoice');
+  };
+
   const handleLoadEstimate = async () => {
     const input = window.prompt('呼び出す見積番号を入力してください');
     if (!input) return;
@@ -372,7 +407,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSaveAndPrint = async (customerInfo: CustomerInfo) => {
+  const handleSaveAndPrint = async (customerInfo: CustomerInfo, documentType: 'quote' | 'invoice' = 'quote') => {
     if (!currentPlan) return;
 
     try {
@@ -410,7 +445,6 @@ const App: React.FC = () => {
 
       const estimateId = data.id;
 
-      // 3. Serialize Full Data for Print (with ID)
       const serializedData = serializePrintData(
         currentPlan,
         items,
@@ -423,7 +457,8 @@ const App: React.FC = () => {
         attendeeLabel,
         customerInfo,
         estimateId,
-        logoType
+        logoType,
+        documentType
       );
 
       // 4. Save to LocalStorage
@@ -886,6 +921,7 @@ const App: React.FC = () => {
           total={totalCost}
           onInputClick={goToInputPage}
           onOutputClick={handleOutputClick}
+          onInvoiceClick={handleInvoiceClick}
         />
 
         {/* Detail Modal */}

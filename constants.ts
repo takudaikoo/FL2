@@ -242,3 +242,24 @@ export const ITEMS: Item[] = [
     tierPrices: { A: 200000, B: 500000, C: 800000, D: 1200000 },
   },
 ];
+
+export const COMPANY_INFO = {
+  FL: {
+    name: '株式会社ファーストリーフ',
+    address: '〒253-0085 神奈川県茅ヶ崎市矢畑682-10',
+    contact: 'TEL: 0467-38-5617 / FAX: 0467-38-5604',
+    rep: '代表取締役 大石康太',
+    stamp: '/images/stamp.png',
+    logo: '/images/logo.png',
+    bankInfo: '湘南信用金庫　小和田支店　普通　０１６０３７８\nカ）ファーストリーフ'
+  },
+  LS: {
+    name: '株式会社 リンクサービス',
+    address: '〒251-0861 神奈川県藤沢市大庭5135-13',
+    contact: 'TEL: 0466-52-6896 / FAX: 0466-52-6904',
+    rep: '代表取締役　菅野 大輝',
+    stamp: null,
+    logo: '/images/logoLS2.png',
+    bankInfo: 'かながわ信用金庫　遠藤支店　普通　０１３５８０５\nカ）リンクサービス'
+  }
+};

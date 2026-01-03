@@ -35,16 +35,13 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
     // Current company info
     const info = COMPANY_INFO[logoType];
     const TAX_RATE = 0.10;
-    const totalWithTax = Math.floor(totalCost * (1 + TAX_RATE));
-    const today = new Date();
-    const formattedDate = `${today.getFullYear()}年 ${today.getMonth() + 1}月 ${today.getDate()}日`;
 
-    // --- Helpers ---
-    // --- Helpers ---
-    const getItemPrice = (item: Item): number => {
+    // --- Price Calculation Logic ---
+    // Recalculate here to handle taxable vs non-taxable separation dynamically
+    const calculateItemPrice = (item: Item, tier: AttendeeTier, countStr: string, opts: Set<number>, grades: Map<number, string>, freeInputs: Map<number, number>): number => {
         if (item.type === 'checkbox' || item.type === 'included') return item.basePrice || 0;
         if (item.type === 'dropdown') {
-            const gradeId = selectedGrades.get(item.id);
+            const gradeId = grades.get(item.id);
             if (gradeId && item.options) {
                 const option = item.options.find((o) => o.id === gradeId);
                 return option ? option.price : 0;
@@ -52,20 +49,27 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
             return 0;
         }
         if (item.type === 'tier_dependent' && item.tierPrices) {
-            if (attendeeTier === 'D') {
+            if (tier === 'D') {
                 const unitPrice = item.tierPrices['D'] ?? 0;
-                const count = parseInt(customAttendeeCount) || 0;
+                const count = parseInt(countStr) || 0;
                 return unitPrice * count;
             } else {
-                return item.tierPrices[attendeeTier] || 0;
+                return item.tierPrices[tier] || 0;
             }
         }
         if (item.type === 'free_input') {
-            return freeInputValues.get(item.id) ?? item.basePrice ?? 0;
+            return freeInputs.get(item.id) ?? item.basePrice ?? 0;
         }
         return 0;
     };
 
+    // Helper to get price using current props
+    const getItemPrice = (item: Item) => calculateItemPrice(item, attendeeTier, customAttendeeCount, selectedOptions, selectedGrades, freeInputValues);
+
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}年 ${today.getMonth() + 1}月 ${today.getDate()}日`;
+
+    // --- Helpers ---
     const getItemContent = (item: Item): string => {
         if (item.type === 'dropdown') {
             const gradeId = selectedGrades.get(item.id);
@@ -102,7 +106,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
         return item.type === 'included';
     });
 
-    const displayItems = items.filter((item) => {
+    const allOptionItems = items.filter((item) => {
         // First check compatibility
         if (!item.allowedPlans.includes(plan.id)) return false;
 
@@ -127,10 +131,36 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
         return price !== 0;
     });
 
-    // Prepare table rows (Fixed 25 rows for A4 layout)
+    // Identify non-taxable items (e.g., Cremation Fee)
+    // Using name check is brittle but effective if IDs are not constant for this purpose.
+    // Based on user request: "火葬料金" is non-taxable.
+    const NON_TAXABLE_NAMES = ['火葬料金'];
+
+    const taxableItems = allOptionItems.filter(item => !NON_TAXABLE_NAMES.includes(item.name));
+    const nonTaxableItems = allOptionItems.filter(item => NON_TAXABLE_NAMES.includes(item.name));
+
+    // Calculate Totals correctly
+    const planPrice = plan.price;
+    // Note: totalCost passed from parent might include everything. We should recalculate locally for display accuracy.
+    // Taxable Subtotal = Plan Price + Taxable Options
+    // Non-Taxable Subtotal = Non-Taxable Options
+
+    // Wait, totalCost prop is used for Invoice too? If we change logic here, verify it matches.
+    // Parent likely sums everything. We need to be consistent.
+    // Let's rely on local calculation for the document display.
+
+    const taxableOptionsTotal = taxableItems.reduce((sum, item) => sum + getItemPrice(item), 0);
+    const nonTaxableOptionsTotal = nonTaxableItems.reduce((sum, item) => sum + getItemPrice(item), 0);
+
+    const taxableSubtotal = planPrice + taxableOptionsTotal;
+    const taxAmount = Math.floor(taxableSubtotal * TAX_RATE);
+    const finalTotal = taxableSubtotal + taxAmount + nonTaxableOptionsTotal;
+
+
+    // Prepare table rows using taxableItems
     const MAX_ROWS = 25;
     const tableRows = Array.from({ length: MAX_ROWS }).map((_, index) => {
-        const item = displayItems[index];
+        const item = taxableItems[index]; // Use taxableItems only for main table
         return {
             name: item ? item.name : '',
             content: item ? getItemContent(item) : '',
@@ -462,55 +492,58 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="flex-1 bg-white"></div>
                         </div>
 
-                        {/* Non-taxable */}
-                        <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
-                            <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
-                                非課税
-                            </div>
-                            <div className="h-[30px] bg-white p-2 text-xs text-gray-600">
-                                {/* Non-taxable content placeholder */}
-                            </div>
+                        <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
+                            非課税
                         </div>
-
-                        {/* Remarks */}
-                        <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
-                            <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
-                                備考
-                            </div>
-                            <div className="h-[80px] bg-white p-2 text-xs text-gray-600 whitespace-pre-wrap leading-tight">
-                                {customerInfo?.remarks}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Totals Section */}
-                    <div className="mt-4 shrink-0 ml-auto w-2/3">
-                        <div className="border border-gray-800 shadow-sm rounded-sm overflow-hidden">
-                            <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
-                                <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">小計</div>
-                                <div className="text-right pr-4 py-1 font-mono text-base">¥{totalCost.toLocaleString()}</div>
-                            </div>
-                            <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
-                                <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">消費税 (10%)</div>
-                                <div className="text-right pr-4 py-1 font-mono text-base">¥{Math.floor(totalCost * 0.1).toLocaleString()}</div>
-                            </div>
-                            <div className="grid grid-cols-[100px_1fr] bg-emerald-50">
-                                <div className="pl-3 py-2 font-bold text-base flex items-center text-emerald-900 !print-color-adjust-exact">合計金額</div>
-                                <div className="text-right pr-4 py-2 font-bold text-2xl font-mono text-emerald-700 underline decoration-2 decoration-emerald-300 underline-offset-4">
-                                    ¥{totalWithTax.toLocaleString()}
+                        <div className="h-[30px] bg-white p-2 text-xs text-gray-600 flex flex-col justify-center">
+                            {nonTaxableItems.map(item => (
+                                <div key={item.id} className="flex justify-between w-[200px]">
+                                    <span>{item.name}</span>
+                                    <span>¥{getItemPrice(item).toLocaleString()}</span>
                                 </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
 
-
+                    {/* Remarks */}
+                    <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
+                        <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
+                            備考
+                        </div>
+                        <div className="h-[80px] bg-white p-2 text-xs text-gray-600 whitespace-pre-wrap leading-tight">
+                            {customerInfo?.remarks}
+                        </div>
+                    </div>
                 </div>
-            </div>
-            {/* Footer Serial Number (Outside main container, positioned absolute relative to page) */}
-            <div className="absolute bottom-4 left-12 text-[10px] text-gray-400 font-mono tracking-widest !print-color-adjust-exact">
-                {estimateId ? String(estimateId).padStart(6, '0') : ''}
+
+                {/* Totals Section */}
+                <div className="mt-4 shrink-0 ml-auto w-2/3">
+                    <div className="border border-gray-800 shadow-sm rounded-sm overflow-hidden">
+                        <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
+                            <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">小計</div>
+                            <div className="text-right pr-4 py-1 font-mono text-base">¥{taxableSubtotal.toLocaleString()}</div>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
+                            <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">消費税 (10%)</div>
+                            <div className="text-right pr-4 py-1 font-mono text-base">¥{taxAmount.toLocaleString()}</div>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr] bg-emerald-50">
+                            <div className="pl-3 py-2 font-bold text-base flex items-center text-emerald-900 !print-color-adjust-exact">合計金額</div>
+                            <div className="text-right pr-4 py-2 font-bold text-2xl font-mono text-emerald-700 underline decoration-2 decoration-emerald-300 underline-offset-4">
+                                ¥{finalTotal.toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
+            {/* Footer Serial Number (Outside main container, positioned absolute relative to page) */ }
+    <div className="absolute bottom-4 left-12 text-[10px] text-gray-400 font-mono tracking-widest !print-color-adjust-exact">
+        {estimateId ? String(estimateId).padStart(6, '0') : ''}
+    </div>
+        </div >
     );
 };
 

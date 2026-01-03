@@ -529,6 +529,10 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                 <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">消費税 (10%)</div>
                                 <div className="text-right pr-4 py-1 font-mono text-base">¥{taxAmount.toLocaleString()}</div>
                             </div>
+                            <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
+                                <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">非課税計</div>
+                                <div className="text-right pr-4 py-1 font-mono text-base">¥{nonTaxableOptionsTotal.toLocaleString()}</div>
+                            </div>
                             <div className="grid grid-cols-[100px_1fr] bg-emerald-50">
                                 <div className="pl-3 py-2 font-bold text-base flex items-center text-emerald-900 !print-color-adjust-exact">合計金額</div>
                                 <div className="text-right pr-4 py-2 font-bold text-2xl font-mono text-emerald-700 underline decoration-2 decoration-emerald-300 underline-offset-4">

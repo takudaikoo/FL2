@@ -462,13 +462,23 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="flex-1 bg-white"></div>
                         </div>
 
+                        {/* Non-taxable */}
+                        <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
+                            <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
+                                非課税
+                            </div>
+                            <div className="h-[30px] bg-white p-2 text-xs text-gray-600">
+                                {/* Non-taxable content placeholder */}
+                            </div>
+                        </div>
+
                         {/* Remarks */}
                         <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
                             <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
                                 備考
                             </div>
-                            <div className="h-[80px] bg-white p-2 text-xs text-gray-600">
-                                {/* Empty space for handwriting or dynamic remarks */}
+                            <div className="h-[80px] bg-white p-2 text-xs text-gray-600 whitespace-pre-wrap leading-tight">
+                                {customerInfo?.remarks}
                             </div>
                         </div>
                     </div>

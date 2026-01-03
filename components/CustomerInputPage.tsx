@@ -27,7 +27,9 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
         religion: '',
         templeName: '',
         templePhone: '',
+
         templeFax: '',
+        remarks: '',
     });
 
 
@@ -357,6 +359,24 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
                         </div>
                     </div>
 
+
+                    {/* Remarks */}
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                        <div className="flex items-center gap-2 mb-6 border-b pb-2">
+                            <span className="text-2xl">📝</span>
+                            <h3 className="font-bold text-lg text-gray-800">備考</h3>
+                        </div>
+                        <div>
+                            <textarea
+                                name="remarks"
+                                value={formData.remarks || ''}
+                                onChange={(e) => setFormData(prev => ({ ...prev, remarks: e.target.value }))}
+                                placeholder="備考事項があればご記入ください"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all min-h-[100px]"
+                            />
+                        </div>
+                    </div>
+
                     {/* Footer Actions */}
                     <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
                         <button
@@ -384,7 +404,7 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
 
                 </form>
             </main>
-        </div>
+        </div >
     );
 };
 

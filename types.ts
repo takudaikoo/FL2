@@ -77,6 +77,7 @@ export interface CustomerInfo {
   templeName: string;
   templePhone: string;
   templeFax: string;
+  remarks?: string;
 }
 
 export interface Estimate {

@@ -135,7 +135,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Top Layout: Customer Info vs Company Info */}
-            <div className="flex justify-between items-start mb-8" style={{ marginTop: '40px' }}>
+            <div className="flex justify-between items-start mb-8" style={{ marginTop: '15px' }}>
 
                 {/* Left: Customer Info (55%) */}
                 <div className="w-[55%]">

@@ -379,8 +379,8 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                 {/* --- Right Column: Estimate --- */}
                 <div className="flex flex-col h-full">
                     {/* Issue Date */}
-                    <div className="flex justify-end mb-2">
-                        <div className="text-sm font-medium">発行日: {formattedDate}</div>
+                    <div className="text-right mb-2">
+                        <div className="text-sm font-medium inline-block">発行日: {formattedDate}</div>
                     </div>
 
                     {/* Company Info */}

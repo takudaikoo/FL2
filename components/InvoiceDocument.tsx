@@ -234,7 +234,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
 
                 {/* Subtotal / Tax / Total Calculation (Right aligned below table) */}
                 <div className="flex flex-col items-end mt-4 text-sm">
-                    <div className="flex justify-between w-[250px] border-b border-gray-300 py-1">
+                    <div className="flex justify-between w-[250px] border-t border-b border-gray-300 py-1">
                         <span>小計 (税抜)</span>
                         <span className="font-mono">¥{totalCost.toLocaleString()}</span>
                     </div>

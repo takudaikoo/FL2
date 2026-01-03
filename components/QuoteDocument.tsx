@@ -401,7 +401,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                 <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 flex items-center !print-color-adjust-exact">
                                     プランに含まれるもの
                                 </div>
-                                <div className="flex-1 py-2 px-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                                <div className="flex-1 py-2 px-2 grid grid-cols-1 gap-y-1">
                                     {includedItems.map((item, idx) => (
                                         <div key={item.id} className="text-gray-600 text-[10px] flex items-center">
                                             <span className="w-1.5 h-1.5 rounded-full bg-gray-400 mr-1.5 inline-block"></span>

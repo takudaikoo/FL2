@@ -120,12 +120,10 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
         if (!isSelected) return false;
 
-        // Final check: Price must be > 0
-        // (Assuming "amount generated" means strictly positive. 
-        //  If discount (negative) is possible, maybe !== 0. 
-        //  But for now > 0 seems safer for "options that generate cost")
+        // Final check: Price must be non-zero
+        // (Allows for negative values like discounts, but filters out 0)
         const price = getItemPrice(item);
-        return price > 0;
+        return price !== 0;
     });
 
     // Prepare table rows (Fixed 25 rows for A4 layout)

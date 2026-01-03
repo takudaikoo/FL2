@@ -87,7 +87,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
 
         if (!isSelected) return false;
         const price = getItemPrice(item);
-        return price > 0;
+        return price !== 0;
     });
 
     // Main rows

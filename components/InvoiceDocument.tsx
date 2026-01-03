@@ -75,7 +75,9 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
 
         let isSelected = false;
         if (item.type === 'free_input') isSelected = true;
-        if (item.type === 'included') isSelected = true;
+        // Included items are always selected if allowed in plan
+        if (item.type === 'included') return true;
+
         if (item.type === 'checkbox' || item.type === 'tier_dependent') {
             isSelected = selectedOptions.has(item.id);
         }
@@ -99,13 +101,14 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         return {
             name: item.name,
             price: getItemPrice(item),
-            detail
+            detail,
+            type: item.type
         };
     });
 
     // Add Base Plan Row at the top
     const allRows = [
-        { name: `基本プラン (${plan.name})`, price: plan.price, detail: '' },
+        { name: `基本プラン (${plan.name})`, price: plan.price, detail: '', type: 'plan' },
         ...rows
     ];
 
@@ -222,7 +225,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                                     {row.detail}
                                 </div>
                                 <div className="flex-1 text-right py-2 px-2 font-mono">
-                                    ¥{row.price.toLocaleString()}
+                                    {row.type === 'included' ? 'プラン内' : `¥${row.price.toLocaleString()}`}
                                 </div>
                             </div>
                         ))}

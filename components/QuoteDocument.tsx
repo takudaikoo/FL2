@@ -107,7 +107,10 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
         let isSelected = false;
         if (item.type === 'free_input') isSelected = true; // Always considered, check price later
-        if (item.type === 'included') isSelected = true;
+
+        // Included items are always selected if allowed in plan
+        if (item.type === 'included') return true;
+
         if (item.type === 'checkbox' || item.type === 'tier_dependent') {
             isSelected = selectedOptions.has(item.id);
         }
@@ -133,6 +136,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
             name: item ? item.name : '',
             content: item ? getItemContent(item) : '',
             price: item ? getItemPrice(item) : null,
+            type: item ? item.type : null,
         };
     });
 
@@ -432,7 +436,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                             )}
                                         </div>
                                         <div className="w-[120px] text-right px-3 h-full flex items-center justify-end font-mono text-gray-700">
-                                            {row.price !== null ? `¥${row.price.toLocaleString()}` : ''}
+                                            {row.type === 'included' ? 'プラン内' : (row.price !== null ? `¥${row.price.toLocaleString()}` : '')}
                                         </div>
                                     </div>
                                 )

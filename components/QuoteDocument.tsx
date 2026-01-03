@@ -133,8 +133,8 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
     // Identify non-taxable items (e.g., Cremation Fee)
     // Using name check is brittle but effective if IDs are not constant for this purpose.
-    // Based on user request: "火葬料金" is non-taxable.
-    const NON_TAXABLE_NAMES = ['火葬料金'];
+    // Based on user request: "火葬料金", "控室料金", "斎場料金" are non-taxable.
+    const NON_TAXABLE_NAMES = ['火葬料金', '控室料金', '斎場料金'];
 
     const taxableItems = allOptionItems.filter(item => !NON_TAXABLE_NAMES.includes(item.name));
     const nonTaxableItems = allOptionItems.filter(item => NON_TAXABLE_NAMES.includes(item.name));

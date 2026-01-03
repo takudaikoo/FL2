@@ -193,7 +193,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Billing Statement & Total */}
-            <div className="mb-12" style={{ marginTop: '40px' }}>
+            <div className="mb-12" style={{ marginTop: '20px' }}>
                 <div className="text-sm mb-4">
                     下記のとおりご請求申し上げます。
                 </div>
@@ -205,7 +205,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Main Table */}
-            <div className="mb-8" style={{ marginTop: '50px' }}>
+            <div className="mb-8" style={{ marginTop: '20px' }}>
                 <div className="border border-black text-sm">
                     {/* Table Header */}
                     <div className="flex bg-gray-100 font-bold border-b border-black !print-color-adjust-exact">
@@ -253,7 +253,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             <div className="flex-1 min-h-[20px]"></div>
 
             {/* Bank Info */}
-            <div className="mb-12" style={{ marginTop: '40px' }}>
+            <div className="mb-12" style={{ marginTop: '20px' }}>
                 <div className="border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold mb-2 !print-color-adjust-exact">お振込先</div>
                 <div className="ml-4 text-sm leading-relaxed">
                     <div className="font-medium text-base mb-2">

@@ -259,7 +259,8 @@ const App: React.FC = () => {
 
     // Call save/print with empty customer info to generate quote directly
     // This reuses the existing save logic but skips the input form
-    const emptyCustomerInfo: CustomerInfo = {
+    // Use loaded customer info if available, otherwise use empty defaults
+    const infoToUse = loadedCustomerInfo || {
       deathDate: '',
       deceasedName: '',
       birthDate: '',
@@ -276,11 +277,12 @@ const App: React.FC = () => {
       religion: '',
       templeName: '',
       templePhone: '',
-      templeFax: ''
+      templeFax: '',
+      remarks: ''
     };
 
-    await handleSaveAndPrint(emptyCustomerInfo);
-    await handleSaveAndPrint(emptyCustomerInfo);
+    await handleSaveAndPrint(infoToUse);
+
   };
 
   const handleInvoiceClick = async () => {

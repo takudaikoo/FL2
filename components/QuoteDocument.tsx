@@ -512,7 +512,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
                                 備考
                             </div>
-                            <div className="h-[80px] bg-white p-2 text-xs text-gray-600 whitespace-pre-wrap leading-tight">
+                            <div className="h-[80px] bg-white p-2 text-xs text-gray-600 leading-tight" style={{ whiteSpace: 'pre-wrap' }}>
                                 {customerInfo?.remarks}
                             </div>
                         </div>

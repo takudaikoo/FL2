@@ -492,57 +492,59 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="flex-1 bg-white"></div>
                         </div>
 
-                        <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
-                            非課税
+                        {/* Non-taxable */}
+                        <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
+                            <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
+                                非課税
+                            </div>
+                            <div className="h-[30px] bg-white p-2 text-xs text-gray-600 flex flex-col justify-center">
+                                {nonTaxableItems.map(item => (
+                                    <div key={item.id} className="flex justify-between w-[200px]">
+                                        <span>{item.name}</span>
+                                        <span>¥{getItemPrice(item).toLocaleString()}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <div className="h-[30px] bg-white p-2 text-xs text-gray-600 flex flex-col justify-center">
-                            {nonTaxableItems.map(item => (
-                                <div key={item.id} className="flex justify-between w-[200px]">
-                                    <span>{item.name}</span>
-                                    <span>¥{getItemPrice(item).toLocaleString()}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
 
-                    {/* Remarks */}
-                    <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
-                        <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
-                            備考
-                        </div>
-                        <div className="h-[80px] bg-white p-2 text-xs text-gray-600 whitespace-pre-wrap leading-tight">
-                            {customerInfo?.remarks}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Totals Section */}
-                <div className="mt-4 shrink-0 ml-auto w-2/3">
-                    <div className="border border-gray-800 shadow-sm rounded-sm overflow-hidden">
-                        <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
-                            <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">小計</div>
-                            <div className="text-right pr-4 py-1 font-mono text-base">¥{taxableSubtotal.toLocaleString()}</div>
-                        </div>
-                        <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
-                            <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">消費税 (10%)</div>
-                            <div className="text-right pr-4 py-1 font-mono text-base">¥{taxAmount.toLocaleString()}</div>
-                        </div>
-                        <div className="grid grid-cols-[100px_1fr] bg-emerald-50">
-                            <div className="pl-3 py-2 font-bold text-base flex items-center text-emerald-900 !print-color-adjust-exact">合計金額</div>
-                            <div className="text-right pr-4 py-2 font-bold text-2xl font-mono text-emerald-700 underline decoration-2 decoration-emerald-300 underline-offset-4">
-                                ¥{finalTotal.toLocaleString()}
+                        {/* Remarks */}
+                        <div className="grid grid-cols-[1fr] shrink-0 border-t border-gray-400">
+                            <div className="bg-gray-100 px-3 font-bold border-b border-gray-300 text-sm py-1 !print-color-adjust-exact">
+                                備考
+                            </div>
+                            <div className="h-[80px] bg-white p-2 text-xs text-gray-600 whitespace-pre-wrap leading-tight">
+                                {customerInfo?.remarks}
                             </div>
                         </div>
                     </div>
+
+                    {/* Totals Section */}
+                    <div className="mt-4 shrink-0 ml-auto w-2/3">
+                        <div className="border border-gray-800 shadow-sm rounded-sm overflow-hidden">
+                            <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
+                                <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">小計</div>
+                                <div className="text-right pr-4 py-1 font-mono text-base">¥{taxableSubtotal.toLocaleString()}</div>
+                            </div>
+                            <div className="grid grid-cols-[100px_1fr] border-b border-gray-300">
+                                <div className="bg-gray-100 pl-3 py-1 font-bold text-sm flex items-center text-gray-600 !print-color-adjust-exact">消費税 (10%)</div>
+                                <div className="text-right pr-4 py-1 font-mono text-base">¥{taxAmount.toLocaleString()}</div>
+                            </div>
+                            <div className="grid grid-cols-[100px_1fr] bg-emerald-50">
+                                <div className="pl-3 py-2 font-bold text-base flex items-center text-emerald-900 !print-color-adjust-exact">合計金額</div>
+                                <div className="text-right pr-4 py-2 font-bold text-2xl font-mono text-emerald-700 underline decoration-2 decoration-emerald-300 underline-offset-4">
+                                    ¥{finalTotal.toLocaleString()}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
-
-
             </div>
-        </div>
-            {/* Footer Serial Number (Outside main container, positioned absolute relative to page) */ }
-    <div className="absolute bottom-4 left-12 text-[10px] text-gray-400 font-mono tracking-widest !print-color-adjust-exact">
-        {estimateId ? String(estimateId).padStart(6, '0') : ''}
-    </div>
+            {/* Footer Serial Number (Outside main container, positioned absolute relative to page) */}
+            <div className="absolute bottom-4 left-12 text-[10px] text-gray-400 font-mono tracking-widest !print-color-adjust-exact">
+                {estimateId ? String(estimateId).padStart(6, '0') : ''}
+            </div>
         </div >
     );
 };

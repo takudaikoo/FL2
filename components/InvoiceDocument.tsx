@@ -70,13 +70,20 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         return 0;
     };
 
+    // Separate included items vs other options
+    const includedItems = items.filter(item => {
+        if (!item.allowedPlans.includes(plan.id)) return false;
+        return item.type === 'included';
+    });
+
     const displayItems = items.filter((item) => {
         if (!item.allowedPlans.includes(plan.id)) return false;
 
+        // Exclude included items 
+        if (item.type === 'included') return false;
+
         let isSelected = false;
         if (item.type === 'free_input') isSelected = true;
-        // Included items are always selected if allowed in plan
-        if (item.type === 'included') return true;
 
         if (item.type === 'checkbox' || item.type === 'tier_dependent') {
             isSelected = selectedOptions.has(item.id);
@@ -90,8 +97,17 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         return price !== 0;
     });
 
-    // Main rows
-    const rows = displayItems.map(item => {
+    // Included Items Rows with "Plan included" designation
+    const includedRows = includedItems.map(item => ({
+        name: item.name,
+        price: 0,
+        detail: '',
+        type: 'included'
+    }));
+
+
+    // Main rows (Options)
+    const optionRows = displayItems.map(item => {
         let detail = '';
         if (item.type === 'dropdown' && item.options) {
             const gradeId = selectedGrades.get(item.id);
@@ -106,10 +122,11 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         };
     });
 
-    // Add Base Plan Row at the top
+    // Add Base Plan Row at the top, then included items, then options
     const allRows = [
         { name: `基本プラン (${plan.name})`, price: plan.price, detail: '', type: 'plan' },
-        ...rows
+        ...includedRows,
+        ...optionRows
     ];
 
     return (

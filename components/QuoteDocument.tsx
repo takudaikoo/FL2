@@ -96,20 +96,21 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
         return '-';
     };
 
+    // Separate included items vs other options
+    const includedItems = items.filter(item => {
+        if (!item.allowedPlans.includes(plan.id)) return false;
+        return item.type === 'included';
+    });
+
     const displayItems = items.filter((item) => {
         // First check compatibility
         if (!item.allowedPlans.includes(plan.id)) return false;
 
-        // Check selection status for checkbox/dropdown/tier
-        // (Even if price is > 0, if it's not selected, we shouldn't show it?
-        //  But getItemPrice returns 0 if not selected usually?
-        //  Wait, checkbox prices are fixed basePrice. Need to check if selected.)
+        // Exclude included items (they are shown separately)
+        if (item.type === 'included') return false;
 
         let isSelected = false;
         if (item.type === 'free_input') isSelected = true; // Always considered, check price later
-
-        // Included items are always selected if allowed in plan
-        if (item.type === 'included') return true;
 
         if (item.type === 'checkbox' || item.type === 'tier_dependent') {
             isSelected = selectedOptions.has(item.id);
@@ -393,7 +394,24 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                 <span className="font-mono">¥{plan.price.toLocaleString()}</span>
                             </div>
                         </div>
-                        {attendeeLabel && attendeeLabel !== '-' && (
+
+                        {/* Included Items */}
+                        {includedItems.length > 0 && (
+                            <div className="flex border-b border-gray-300">
+                                <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 flex items-center !print-color-adjust-exact">
+                                    プランに含まれるもの
+                                </div>
+                                <div className="flex-1 py-1 px-2 flex flex-wrap gap-2 items-center">
+                                    {includedItems.map((item, idx) => (
+                                        <span key={item.id} className="text-gray-600 bg-gray-50 px-1.5 rounded border border-gray-200">
+                                            {item.name}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {attendeeLabel && attendeeLabel !== '-' && attendeeTier === 'D' && (
                             <div className="flex border-b border-gray-300">
                                 <div className="bg-gray-100 w-32 py-1 px-2 font-bold text-gray-700 !print-color-adjust-exact">参列人数</div>
                                 <div className="flex-1 py-1 px-2 text-center">{attendeeLabel}</div>

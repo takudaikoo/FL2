@@ -251,6 +251,9 @@ export const useEstimateSystem = () => {
 
             const estimateId = data.id;
 
+            // Update local state with the saved customer info so subsequent actions (like Invoice output) use it
+            setLoadedCustomerInfo(customerInfo);
+
             const serializedData = serializePrintData(
                 currentPlan,
                 items,

@@ -63,7 +63,15 @@ const PrintPreview: React.FC = () => {
 
             pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
 
-            const fileName = `${data?.documentType === 'invoice' ? '請求書' : '御見積書'}_${data?.estimateId || 'draft'}.pdf`;
+            const today = new Date();
+            const dateStr = today.getFullYear() +
+                String(today.getMonth() + 1).padStart(2, '0') +
+                String(today.getDate()).padStart(2, '0');
+
+            const applicantName = data?.customerInfo?.applicantName || 'お客様';
+            const docType = data?.documentType === 'invoice' ? '請求書' : '御見積書';
+
+            const fileName = `${applicantName} 様_${docType}_${dateStr}.pdf`;
             pdf.save(fileName);
         } catch (error) {
             console.error('PDF generation failed:', error);

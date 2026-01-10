@@ -1,256 +1,56 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { supabase } from './lib/supabase';
+import React, { useEffect, useState } from 'react';
 import { PlanCategory, PlanId, AttendeeTier, Item, AttendeeOption, Plan, CustomerInfo } from './types';
 import DetailModal from './components/DetailModal';
 import Footer from './components/Footer';
 import { Info, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import PrintPreview from './components/PrintPreview';
 import CustomerInputPage from './components/CustomerInputPage';
-import { serializePrintData } from './lib/serialization';
 import StartScreen from './components/StartScreen';
+import { useEstimateSystem } from './hooks/useEstimateSystem';
+import MobileEstimatePage from './components/MobileEstimatePage';
 
 type ViewMode = 'start' | 'home' | 'input';
 
 const App: React.FC = () => {
-  // Check for print mode
-  const [isPrintMode, setIsPrintMode] = useState(false);
+  const system = useEstimateSystem();
+  const {
+    isPrintMode,
+    category, setCategory,
+    selectedPlanId, setSelectedPlanId,
+    attendeeTier, setAttendeeTier,
+    selectedOptions, setSelectedOptions,
+    selectedGrades, setSelectedGrades,
+    customAttendeeCount, setCustomAttendeeCount,
+    freeInputValues, setFreeInputValues,
+    modalItem, setModalItem,
+    loadedCustomerInfo, setLoadedCustomerInfo,
+    viewMode, setViewMode,
+    isSaving,
+    logoType,
+    plans, items, attendeeOptions, loading,
+    handleCategoryChange, handlePlanChange, toggleOption, setGrade, setFreeInputValue,
+    currentPlan, totalCost, attendeeLabel, toggleLogo, handleSaveAndPrint, executeLoadEstimate
+  } = system;
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [isIncludedOpen, setIsIncludedOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('print') === 'true') {
-      setIsPrintMode(true);
+    if (params.get('mode') === 'start') {
+      setViewMode('start');
     }
+    if (params.get('mobile') === 'true') {
+      setIsMobile(true);
+    }
+
   }, []);
 
-  // --- State ---
-  const [category, setCategory] = useState<PlanCategory>('funeral');
-  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>('a');
-  const [attendeeTier, setAttendeeTier] = useState<AttendeeTier>('A');
-
-  // Options state
-  const [selectedOptions, setSelectedOptions] = useState<Set<number>>(new Set());
-  const [selectedGrades, setSelectedGrades] = useState<Map<number, string>>(new Map());
-  const [customAttendeeCount, setCustomAttendeeCount] = useState<string>('');
-  const [freeInputValues, setFreeInputValues] = useState<Map<number, number>>(new Map());
-
-  // Modal & View state
-  const [modalItem, setModalItem] = useState<Item | null>(null);
-
-  // State for loaded customer info
-  const [loadedCustomerInfo, setLoadedCustomerInfo] = useState<CustomerInfo | null>(null);
-  const [isIncludedOpen, setIsIncludedOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('start');
-  const [isSaving, setIsSaving] = useState(false);
-
-
-
-  // Logo Toggle State
-  const [logoType, setLogoType] = useState<'FL' | 'LS'>('FL');
-
-  // Supabase data
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
-  const [attendeeOptions, setAttendeeOptions] = useState<AttendeeOption[]>([]);
-
-  const [loading, setLoading] = useState(true);
-
-  // Fetch data from Supabase
-  useEffect(() => {
-    // Skip fetching if in print mode (PrintPreview handles its own data loading from localStorage)
-    if (isPrintMode) return;
-
-    const fetchData = async () => {
-      try {
-        console.log('Fetching data from Supabase...');
-
-        // Fetch plans
-        const { data: plansData, error: plansError } = await supabase
-          .from('plans')
-          .select('*')
-          .order('id');
-
-        if (plansError) {
-          console.error('Plans error:', plansError);
-          throw plansError;
-        }
-        console.log('Plans fetched:', plansData);
-
-        // Fetch items
-        const { data: itemsData, error: itemsError } = await supabase
-          .from('items')
-          .select('*')
-          .order('display_order', { ascending: true });
-
-        if (itemsError) {
-          console.error('Items error:', itemsError);
-          throw itemsError;
-        }
-        console.log('Items fetched:', itemsData);
-
-        // Fetch attendee options
-        const { data: attendeeData, error: attendeeError } = await supabase
-          .from('attendee_options')
-          .select('*')
-          .order('tier');
-
-        if (attendeeError) {
-          console.error('Attendee error:', attendeeError);
-          throw attendeeError;
-        }
-        console.log('Attendee options fetched:', attendeeData);
-
-        // Convert snake_case to camelCase for items
-        const convertedItems = (itemsData || []).map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          displayOrder: item.display_order || 0,
-          type: item.type,
-          basePrice: item.base_price,
-          allowedPlans: item.allowed_plans,
-          tierPrices: item.tier_prices,
-          options: item.options,
-          useDropdown: item.use_dropdown, // Map from DB snake_case
-        }));
-
-        setPlans(plansData as Plan[]);
-        setItems(convertedItems as Item[]);
-        setAttendeeOptions(attendeeData as AttendeeOption[]);
-        console.log('Data loaded successfully');
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        alert('データの読み込みに失敗しました。コンソールを確認してください。');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [isPrintMode]);
 
   // --- Handlers ---
 
-  const handleCategoryChange = (newCat: PlanCategory) => {
-    setCategory(newCat);
-    if (newCat === 'funeral') {
-      setSelectedPlanId('a');
-    } else {
-      setSelectedPlanId('c');
-    }
-    // Reset options when switching major categories is usually good UX, 
-    // but preserving relevant ones is also fine. Let's strict reset for clarity.
-    setSelectedOptions(new Set());
-    setSelectedGrades(new Map());
-  };
 
-  const handlePlanChange = (planId: PlanId) => {
-    setSelectedPlanId(planId);
-    // Grade availability might change, so we clean up invalid grades
-    setSelectedGrades(prev => {
-      const next = new Map(prev);
-      for (const [itemId, gradeId] of next.entries()) {
-        const item = items.find(i => i.id === itemId);
-        if (item?.options) {
-          const option = item.options.find(o => o.id === gradeId);
-          if (option && !option.allowedPlans.includes(planId)) {
-            next.delete(itemId);
-          }
-        }
-      }
-      return next;
-    });
-  };
 
-  const toggleOption = (itemId: number) => {
-    const newSet = new Set(selectedOptions);
-    if (newSet.has(itemId)) {
-      newSet.delete(itemId);
-    } else {
-      newSet.add(itemId);
-    }
-    setSelectedOptions(newSet);
-  };
-
-  const setGrade = (itemId: number, gradeId: string) => {
-    const newMap = new Map(selectedGrades);
-    if (gradeId === '') {
-      newMap.delete(itemId);
-    } else {
-      newMap.set(itemId, gradeId);
-    }
-    setSelectedGrades(newMap);
-  };
-
-  // --- Calculations ---
-
-  const currentPlan = plans.find(p => p.id === selectedPlanId);
-
-  const totalCost = useMemo(() => {
-    if (!currentPlan) return 0;
-    let total = currentPlan.price;
-
-    items.forEach(item => {
-      // 1. Check if allowed in current plan
-      if (!item.allowedPlans.includes(selectedPlanId)) return;
-
-      // 2. Add costs based on type
-      if (item.type === 'checkbox') {
-        if (selectedOptions.has(item.id) && item.basePrice) {
-          total += item.basePrice;
-        }
-      } else if (item.type === 'dropdown') {
-        const gradeId = selectedGrades.get(item.id);
-        if (gradeId && item.options) {
-          const option = item.options.find(o => o.id === gradeId);
-          if (option) total += option.price;
-        }
-      } else if (item.type === 'tier_dependent') {
-        if (selectedOptions.has(item.id) && item.tierPrices) {
-          if (attendeeTier === 'D') {
-            const unitPrice = item.tierPrices['D'] ?? 0;
-            const count = parseInt(customAttendeeCount) || 0;
-            total += unitPrice * count;
-          } else {
-            total += item.tierPrices[attendeeTier];
-          }
-        }
-      } else if (item.type === 'free_input') {
-        const val = freeInputValues.get(item.id) ?? item.basePrice ?? 0;
-        total += val;
-      }
-    });
-
-    return total;
-  }, [currentPlan, selectedPlanId, selectedOptions, selectedGrades, attendeeTier, items, attendeeOptions, freeInputValues, customAttendeeCount]);
-
-  // Get attendee label for display
-  const attendeeLabel = useMemo(() => {
-    const option = attendeeOptions.find(opt => opt.tier === attendeeTier);
-    if (attendeeTier === 'D') {
-      const count = parseInt(customAttendeeCount) || 0;
-      return `自由入力 (${count}名)`;
-    }
-    return option?.label || '';
-  }, [attendeeTier, customAttendeeCount, attendeeOptions]);
-
-  // View Navigation Handlers
-  const goToInputPage = () => {
-    if (!currentPlan) {
-      alert('プランが選択されていません。');
-      return;
-    }
-    setViewMode('input');
-    // Scroll to top
-    window.scrollTo(0, 0);
-  };
-
-  const handleBackToHome = () => {
-    setViewMode('home');
-  };
-
-  const toggleLogo = () => {
-    setLogoType(prev => prev === 'FL' ? 'LS' : 'FL');
-  };
 
   const handleOutputClick = async () => {
     if (!currentPlan) {
@@ -321,70 +121,32 @@ const App: React.FC = () => {
     await handleSaveAndPrint(infoToUse, 'invoice');
   };
 
-  const executeLoadEstimate = async (id: number, showSuccessAlert = true) => {
-    try {
-      const { data, error } = await supabase
-        .from('estimates')
-        .select('*')
-        .eq('id', id)
-        .single();
+  const handleLoadEstimate = async () => {
+    const input = window.prompt('呼び出す見積番号を入力してください');
+    if (!input) return;
 
-      if (error || !data) {
-        alert('見積データが見つかりませんでした');
-        console.error('Error fetching estimate:', error);
-        return false;
-      }
-
-      const content = data.content;
-      if (!content) {
-        alert('データの形式が正しくありません');
-        return false;
-      }
-
-      // Restore State
-      if (content.plan && content.plan.id) {
-        setSelectedPlanId(content.plan.id as any);
-        const planDef = plans.find(p => p.id === content.plan.id);
-        if (planDef) {
-          setCategory(planDef.category);
-        }
-      }
-      if (content.items) setItems(content.items);
-
-      if (content.selectedOptions) {
-        setSelectedOptions(new Set(content.selectedOptions));
-      }
-
-      if (content.selectedGrades) {
-        const grades = new Map(content.selectedGrades);
-        setSelectedGrades(grades);
-      }
-
-      if (content.attendeeTier) setAttendeeTier(content.attendeeTier);
-      if (content.customAttendeeCount) setCustomAttendeeCount(content.customAttendeeCount);
-
-      if (content.freeInputValues) {
-        const freeInputs = new Map(content.freeInputValues);
-        setFreeInputValues(freeInputs);
-      }
-
-      if (content.logoType) setLogoType(content.logoType);
-
-      if (content.customerInfo) {
-        setLoadedCustomerInfo(content.customerInfo);
-      }
-
-      if (showSuccessAlert) {
-        alert(`見積番号 ${id} を読み込みました。`);
-      }
-      return true;
-
-    } catch (e) {
-      console.error('Unexpected error loading estimate:', e);
-      alert('読み込み中にエラーが発生しました');
-      return false;
+    const id = parseInt(input);
+    if (isNaN(id)) {
+      alert('有効な数字を入力してください');
+      return;
     }
+    await executeLoadEstimate(id);
   };
+
+  const goToInputPage = () => {
+    if (!currentPlan) {
+      alert('プランが選択されていません。');
+      return;
+    }
+    setViewMode('input');
+    window.scrollTo(0, 0);
+  };
+
+  const handleBackToHome = () => {
+    setViewMode('home');
+  };
+
+
 
   const handleStartLoad = async (idStr: string) => {
     const id = parseInt(idStr);
@@ -407,166 +169,7 @@ const App: React.FC = () => {
     setViewMode('home');
   };
 
-  const handleLoadEstimate = async () => {
-    const input = window.prompt('呼び出す見積番号を入力してください');
-    if (!input) return;
 
-    const id = parseInt(input);
-    if (isNaN(id)) {
-      alert('有効な数字を入力してください');
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('estimates')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error || !data) {
-        alert('見積データが見つかりませんでした');
-        console.error('Error fetching estimate:', error);
-        return;
-      }
-
-      const content = data.content;
-      if (!content) {
-        alert('データの形式が正しくありません');
-        return;
-      }
-
-      // Restore State
-      if (content.plan && content.plan.id) {
-        // Find the plan ID from the saved plan object
-        // The PlanId type is 'a' | 'b' | 'c' etc.
-        // We assume content.plan.id is valid
-        setSelectedPlanId(content.plan.id as any);
-      }
-      if (content.items) setItems(content.items);
-
-      if (content.selectedOptions) {
-        setSelectedOptions(new Set(content.selectedOptions));
-      }
-
-      if (content.selectedGrades) {
-        // Handle both array of entries and object/map serialization
-        const grades = new Map(content.selectedGrades);
-        setSelectedGrades(grades);
-      }
-
-      if (content.attendeeTier) setAttendeeTier(content.attendeeTier);
-      if (content.customAttendeeCount) setCustomAttendeeCount(content.customAttendeeCount);
-
-      if (content.freeInputValues) {
-        const freeInputs = new Map(content.freeInputValues);
-        setFreeInputValues(freeInputs);
-      }
-
-      if (content.customerInfo) {
-        // If customer info exists (even empty), set it. 
-        // If retrieving an "output only" quote, it might be empty strings, which is fine.
-        // We probably want to populate the input form with this if the user goes there.
-        // The input form (CustomerInputPage) uses its own local state or needs to receive this?
-        // Wait, CustomerInputPage is receiving props from App? No, logic is currently missing TO PASS state to CustomerInputPage.
-        // Currently App.tsx doesn't seem to pass customerInfo TO the CustomerInputPage. 
-        // Let's check CustomerInputPage usage. 
-        // It seems CustomerInputPage might be using a callback `onSubmit` but doesn't take `initialData`.
-        // To fully support "loading" customer info, we need to pass it to CustomerInputPage.
-        // FOR NOW: I will just ensure the state in App (if any) or prepare it. 
-        // Actually App.tsx DOES NOT hold customerInfo state! `handleSaveAndPrint` takes it as arg from InputPage.
-        // So where do we store the loaded customer info?
-        // We should add a state for `loadedCustomerInfo` in App and pass it to CustomerInputPage.
-      }
-
-      if (content.logoType) setLogoType(content.logoType);
-
-      // We also need to handle the loaded customer info for the Input Page.
-      // I'll add a state for it in the next step or right here if I can edit the top level.
-      // For now, let's set the other states. I will need to add `loadedCustomerInfo` state to App.tsx.
-      if (content.customerInfo) {
-        setLoadedCustomerInfo(content.customerInfo);
-      }
-
-      alert(`見積番号 ${id} を読み込みました。`);
-
-    } catch (e) {
-      console.error('Unexpected error loading estimate:', e);
-      alert('読み込み中にエラーが発生しました');
-    }
-  };
-
-  const handleSaveAndPrint = async (customerInfo: CustomerInfo, documentType: 'quote' | 'invoice' = 'quote') => {
-    if (!currentPlan) return;
-
-    try {
-      setIsSaving(true);
-
-      // 1. Serialize Basic Data (without ID yet)
-      const dataToSave = {
-        plan: currentPlan,
-        items,
-        selectedOptions: Array.from(selectedOptions),
-        selectedGrades: Array.from(selectedGrades.entries()),
-        attendeeTier,
-        customAttendeeCount,
-        freeInputValues: Array.from(freeInputValues.entries()),
-        totalCost,
-        attendeeLabel,
-        customerInfo,
-        logoType // Add logoType to saved content
-      };
-
-      // 2. Save to Supabase
-      const { data, error } = await supabase
-        .from('estimates')
-        .insert([
-          {
-            content: dataToSave,
-            customer_info: customerInfo,
-            total_price: totalCost
-          }
-        ])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      const estimateId = data.id;
-
-      const serializedData = serializePrintData(
-        currentPlan,
-        items,
-        selectedOptions,
-        selectedGrades,
-        attendeeTier,
-        customAttendeeCount,
-        freeInputValues,
-        totalCost,
-        attendeeLabel,
-        customerInfo,
-        estimateId,
-        logoType,
-        documentType
-      );
-
-      // 4. Save to LocalStorage
-      localStorage.setItem('print_data', serializedData);
-
-      // 5. Open Print Window
-      window.open('/?print=true', '_blank');
-
-      // Optionally stay on input page or reset
-      // For now, improved UX would be:
-      // setViewMode('home'); // But user might want to re-print or correct info. Keep current view.
-
-    } catch (error) {
-      console.error('Error saving estimate:', error);
-      alert('保存に失敗しました。もう一度お試しください。');
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
 
   // --- Render Helpers ---
@@ -632,7 +235,19 @@ const App: React.FC = () => {
 
 
 
-  // Home View
+  // Mobile Home View
+  if (viewMode === 'home' && isMobile) {
+    return (
+      <MobileEstimatePage
+        system={system}
+        onOutputClick={handleOutputClick}
+        onInvoiceClick={handleInvoiceClick}
+        goToInputPage={goToInputPage}
+      />
+    );
+  }
+
+  // Desktop Home View
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 print:bg-white">
       <div className="contents print:hidden">

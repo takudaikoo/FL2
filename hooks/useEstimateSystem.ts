@@ -268,7 +268,8 @@ export const useEstimateSystem = () => {
             );
 
             localStorage.setItem('print_data', serializedData);
-            window.open('/?print=true', '_blank');
+            const isMobile = new URLSearchParams(window.location.search).get('mobile') === 'true';
+            window.open(`/?print=true${isMobile ? '&mobile=true' : ''}`, '_blank');
 
         } catch (error) {
             console.error('Error saving estimate:', error);

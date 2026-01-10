@@ -83,28 +83,32 @@ const PrintPreview: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-500 flex flex-col items-center py-8 print:bg-white print:py-0 print:block">
             {/* Control Bar (Hidden in Print) */}
-            <div className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur shadow-md p-4 flex justify-between items-center print:hidden z-50">
-                <h1 className="font-bold text-gray-700">印刷プレビュー ({data.documentType === 'invoice' ? '請求書' : '見積書'})</h1>
-                <div className="flex gap-4">
-                    <button
-                        onClick={() => window.close()}
-                        className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100 transition-colors"
-                    >
-                        閉じる
-                    </button>
-                    <button
-                        onClick={handleDownloadPDF}
-                        disabled={isGeneratingPdf}
-                        className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                        {isGeneratingPdf ? '作成中...' : 'PDFダウンロード'}
-                    </button>
-                    <button
-                        onClick={() => window.print()}
-                        className="px-6 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-bold shadow-sm transition-transform active:scale-95"
-                    >
-                        印刷する
-                    </button>
+            <div className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur shadow-md p-2 md:p-4 flex gap-2 md:block justify-between items-center print:hidden z-50">
+                <div className="flex justify-between items-center w-full">
+                    <h1 className="font-bold text-gray-700 text-sm md:text-xl truncate flex-1">
+                        {data.documentType === 'invoice' ? '請求書' : '見積書'}プレビュー
+                    </h1>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => window.close()}
+                            className="px-2 py-1 md:px-4 md:py-2 rounded border border-gray-300 hover:bg-gray-100 transition-colors text-xs md:text-base whitespace-nowrap"
+                        >
+                            閉じる
+                        </button>
+                        <button
+                            onClick={handleDownloadPDF}
+                            disabled={isGeneratingPdf}
+                            className="px-2 py-1 md:px-4 md:py-2 rounded bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 md:gap-2 text-xs md:text-base whitespace-nowrap"
+                        >
+                            {isGeneratingPdf ? '作成中...' : 'PDF保存'}
+                        </button>
+                        <button
+                            onClick={() => window.print()}
+                            className="px-2 py-1 md:px-6 md:py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-bold shadow-sm transition-transform active:scale-95 text-xs md:text-base whitespace-nowrap hidden md:block"
+                        >
+                            印刷
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -112,38 +116,41 @@ const PrintPreview: React.FC = () => {
             <div className="h-16 print:hidden"></div>
 
             {/* A4 Container */}
-            <div id="print-content" className="bg-white shadow-2xl print:shadow-none mx-auto print:mx-0 print:w-full">
-                {data.documentType === 'invoice' ? (
-                    <InvoiceDocument
-                        plan={data.plan}
-                        items={data.items}
-                        selectedOptions={data.selectedOptions}
-                        selectedGrades={data.selectedGrades}
-                        attendeeTier={data.attendeeTier}
-                        customAttendeeCount={data.customAttendeeCount}
-                        freeInputValues={data.freeInputValues}
-                        totalCost={data.totalCost}
-                        attendeeLabel={data.attendeeLabel}
-                        customerInfo={data.customerInfo}
-                        estimateId={data.estimateId}
-                        logoType={data.logoType || 'FL'}
-                    />
-                ) : (
-                    <QuoteDocument
-                        plan={data.plan}
-                        items={data.items}
-                        selectedOptions={data.selectedOptions}
-                        selectedGrades={data.selectedGrades}
-                        attendeeTier={data.attendeeTier}
-                        customAttendeeCount={data.customAttendeeCount}
-                        freeInputValues={data.freeInputValues}
-                        totalCost={data.totalCost}
-                        attendeeLabel={data.attendeeLabel}
-                        customerInfo={data.customerInfo}
-                        estimateId={data.estimateId}
-                        logoType={data.logoType || 'FL'}
-                    />
-                )}
+            {/* A4 Scroll Container */}
+            <div className="w-full overflow-x-auto print:overflow-visible pb-8 px-4 md:px-0 scrollbar-hide">
+                <div id="print-content" className="bg-white shadow-2xl print:shadow-none mx-auto print:mx-0 print:w-full min-w-[210mm]">
+                    {data.documentType === 'invoice' ? (
+                        <InvoiceDocument
+                            plan={data.plan}
+                            items={data.items}
+                            selectedOptions={data.selectedOptions}
+                            selectedGrades={data.selectedGrades}
+                            attendeeTier={data.attendeeTier}
+                            customAttendeeCount={data.customAttendeeCount}
+                            freeInputValues={data.freeInputValues}
+                            totalCost={data.totalCost}
+                            attendeeLabel={data.attendeeLabel}
+                            customerInfo={data.customerInfo}
+                            estimateId={data.estimateId}
+                            logoType={data.logoType || 'FL'}
+                        />
+                    ) : (
+                        <QuoteDocument
+                            plan={data.plan}
+                            items={data.items}
+                            selectedOptions={data.selectedOptions}
+                            selectedGrades={data.selectedGrades}
+                            attendeeTier={data.attendeeTier}
+                            customAttendeeCount={data.customAttendeeCount}
+                            freeInputValues={data.freeInputValues}
+                            totalCost={data.totalCost}
+                            attendeeLabel={data.attendeeLabel}
+                            customerInfo={data.customerInfo}
+                            estimateId={data.estimateId}
+                            logoType={data.logoType || 'FL'}
+                        />
+                    )}
+                </div>
             </div>
 
             <style>{`

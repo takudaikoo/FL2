@@ -7,8 +7,9 @@ import { Info, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import PrintPreview from './components/PrintPreview';
 import CustomerInputPage from './components/CustomerInputPage';
 import { serializePrintData } from './lib/serialization';
+import StartScreen from './components/StartScreen';
 
-type ViewMode = 'home' | 'input';
+type ViewMode = 'start' | 'home' | 'input';
 
 const App: React.FC = () => {
   // Check for print mode
@@ -38,7 +39,7 @@ const App: React.FC = () => {
   // State for loaded customer info
   const [loadedCustomerInfo, setLoadedCustomerInfo] = useState<CustomerInfo | null>(null);
   const [isIncludedOpen, setIsIncludedOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('home');
+  const [viewMode, setViewMode] = useState<ViewMode>('start');
   const [isSaving, setIsSaving] = useState(false);
 
 
@@ -320,6 +321,92 @@ const App: React.FC = () => {
     await handleSaveAndPrint(infoToUse, 'invoice');
   };
 
+  const executeLoadEstimate = async (id: number, showSuccessAlert = true) => {
+    try {
+      const { data, error } = await supabase
+        .from('estimates')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error || !data) {
+        alert('見積データが見つかりませんでした');
+        console.error('Error fetching estimate:', error);
+        return false;
+      }
+
+      const content = data.content;
+      if (!content) {
+        alert('データの形式が正しくありません');
+        return false;
+      }
+
+      // Restore State
+      if (content.plan && content.plan.id) {
+        setSelectedPlanId(content.plan.id as any);
+        const planDef = plans.find(p => p.id === content.plan.id);
+        if (planDef) {
+          setCategory(planDef.category);
+        }
+      }
+      if (content.items) setItems(content.items);
+
+      if (content.selectedOptions) {
+        setSelectedOptions(new Set(content.selectedOptions));
+      }
+
+      if (content.selectedGrades) {
+        const grades = new Map(content.selectedGrades);
+        setSelectedGrades(grades);
+      }
+
+      if (content.attendeeTier) setAttendeeTier(content.attendeeTier);
+      if (content.customAttendeeCount) setCustomAttendeeCount(content.customAttendeeCount);
+
+      if (content.freeInputValues) {
+        const freeInputs = new Map(content.freeInputValues);
+        setFreeInputValues(freeInputs);
+      }
+
+      if (content.logoType) setLogoType(content.logoType);
+
+      if (content.customerInfo) {
+        setLoadedCustomerInfo(content.customerInfo);
+      }
+
+      if (showSuccessAlert) {
+        alert(`見積番号 ${id} を読み込みました。`);
+      }
+      return true;
+
+    } catch (e) {
+      console.error('Unexpected error loading estimate:', e);
+      alert('読み込み中にエラーが発生しました');
+      return false;
+    }
+  };
+
+  const handleStartLoad = async (idStr: string) => {
+    const id = parseInt(idStr);
+    if (isNaN(id)) {
+      alert('有効な数字を入力してください');
+      return;
+    }
+    const success = await executeLoadEstimate(id, false);
+    if (success) {
+      setViewMode('home');
+    }
+  };
+
+  const handleStartNew = () => {
+    setSelectedOptions(new Set());
+    setSelectedGrades(new Map());
+    setCategory('funeral');
+    setSelectedPlanId('a');
+    setLoadedCustomerInfo(null);
+    setViewMode('home');
+  };
+
   const handleLoadEstimate = async () => {
     const input = window.prompt('呼び出す見積番号を入力してください');
     if (!input) return;
@@ -516,6 +603,18 @@ const App: React.FC = () => {
           <div className="text-lg font-medium text-gray-600">読み込み中...</div>
         </div>
       </div>
+    );
+  }
+
+  // Start View
+  if (viewMode === 'start') {
+    return (
+      <StartScreen
+        onLoad={handleStartLoad}
+        onCreateNew={handleStartNew}
+        logoType={logoType}
+        onToggleLogo={toggleLogo}
+      />
     );
   }
 

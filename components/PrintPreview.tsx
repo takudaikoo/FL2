@@ -3,6 +3,8 @@ import QuoteDocument from './QuoteDocument';
 import InvoiceDocument from './InvoiceDocument';
 import { deserializePrintData } from '../lib/serialization';
 import { Plan, Item, AttendeeTier } from '../types';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 const PrintPreview: React.FC = () => {
     const [data, setData] = useState<{
@@ -21,6 +23,8 @@ const PrintPreview: React.FC = () => {
         documentType?: 'quote' | 'invoice';
     } | null>(null);
 
+    const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
     useEffect(() => {
         const stored = localStorage.getItem('print_data');
         if (stored) {
@@ -31,6 +35,42 @@ const PrintPreview: React.FC = () => {
             }
         }
     }, []);
+
+    const handleDownloadPDF = async () => {
+        const input = document.getElementById('print-content');
+        if (!input) return;
+
+        try {
+            setIsGeneratingPdf(true);
+            const canvas = await html2canvas(input, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                windowWidth: 1200 // Ensure desktop-like rendering for canvas
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+            });
+
+            const imgWidth = 210;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+            const fileName = `${data?.documentType === 'invoice' ? '請求書' : '御見積書'}_${data?.estimateId || 'draft'}.pdf`;
+            pdf.save(fileName);
+        } catch (error) {
+            console.error('PDF generation failed:', error);
+            alert('PDFの作成に失敗しました。');
+        } finally {
+            setIsGeneratingPdf(false);
+        }
+    };
 
     if (!data) {
         return (
@@ -53,6 +93,13 @@ const PrintPreview: React.FC = () => {
                         閉じる
                     </button>
                     <button
+                        onClick={handleDownloadPDF}
+                        disabled={isGeneratingPdf}
+                        className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        {isGeneratingPdf ? '作成中...' : 'PDFダウンロード'}
+                    </button>
+                    <button
                         onClick={() => window.print()}
                         className="px-6 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-bold shadow-sm transition-transform active:scale-95"
                     >
@@ -65,7 +112,7 @@ const PrintPreview: React.FC = () => {
             <div className="h-16 print:hidden"></div>
 
             {/* A4 Container */}
-            <div className="bg-white shadow-2xl print:shadow-none mx-auto print:mx-0 print:w-full">
+            <div id="print-content" className="bg-white shadow-2xl print:shadow-none mx-auto print:mx-0 print:w-full">
                 {data.documentType === 'invoice' ? (
                     <InvoiceDocument
                         plan={data.plan}

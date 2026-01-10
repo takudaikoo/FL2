@@ -24,6 +24,7 @@ const PrintPreview: React.FC = () => {
     } | null>(null);
 
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+    const isMobile = new URLSearchParams(window.location.search).get('mobile') === 'true';
 
     useEffect(() => {
         const stored = localStorage.getItem('print_data');
@@ -82,42 +83,75 @@ const PrintPreview: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-500 flex flex-col items-center py-8 print:bg-white print:py-0 print:block">
-            {/* Control Bar (Hidden in Print) */}
-            <div className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur shadow-md p-2 md:p-4 flex gap-2 md:block justify-between items-center print:hidden z-50">
-                <div className="flex justify-between items-center w-full">
-                    <h1 className="font-bold text-gray-700 text-sm md:text-xl truncate flex-1">
-                        {data.documentType === 'invoice' ? '請求書' : '見積書'}プレビュー
-                    </h1>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => window.close()}
-                            className="px-2 py-1 md:px-4 md:py-2 rounded border border-gray-300 hover:bg-gray-100 transition-colors text-xs md:text-base whitespace-nowrap"
-                        >
-                            閉じる
-                        </button>
+
+            {/* Mobile Overlay */}
+            {isMobile && (
+                <div className="fixed inset-0 bg-gray-100 z-50 flex flex-col items-center justify-center p-4">
+                    <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm text-center space-y-6">
+                        <div className="flex justify-center mb-4">
+                            <span className="text-4xl">📄</span>
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-800">
+                            {data.documentType === 'invoice' ? '請求書' : '見積書'}出力
+                        </h2>
+                        <p className="text-gray-500 text-sm">
+                            下のボタンを押してPDFを保存してください
+                        </p>
                         <button
                             onClick={handleDownloadPDF}
                             disabled={isGeneratingPdf}
-                            className="px-2 py-1 md:px-4 md:py-2 rounded bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 md:gap-2 text-xs md:text-base whitespace-nowrap"
+                            className="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                         >
-                            {isGeneratingPdf ? '作成中...' : 'PDF保存'}
+                            {isGeneratingPdf ? (
+                                <><span>作成中...</span></>
+                            ) : (
+                                <><span>📥 PDFを保存</span></>
+                            )}
                         </button>
                         <button
-                            onClick={() => window.print()}
-                            className="px-2 py-1 md:px-6 md:py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-bold shadow-sm transition-transform active:scale-95 text-xs md:text-base whitespace-nowrap hidden md:block"
+                            onClick={() => window.close()}
+                            className="text-gray-400 text-sm underline hover:text-gray-600"
                         >
-                            印刷
+                            閉じる
                         </button>
                     </div>
                 </div>
-            </div>
+            )}
 
-            {/* Spacer for fixed header */}
-            <div className="h-16 print:hidden"></div>
+            {/* Desktop Control Bar */}
+            {!isMobile && (
+                <>
+                    <div className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur shadow-md p-4 flex justify-between items-center print:hidden z-50">
+                        <h1 className="font-bold text-gray-700">印刷プレビュー ({data.documentType === 'invoice' ? '請求書' : '見積書'})</h1>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => window.close()}
+                                className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100 transition-colors"
+                            >
+                                閉じる
+                            </button>
+                            <button
+                                onClick={handleDownloadPDF}
+                                disabled={isGeneratingPdf}
+                                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            >
+                                {isGeneratingPdf ? '作成中...' : 'PDFダウンロード'}
+                            </button>
+                            <button
+                                onClick={() => window.print()}
+                                className="px-6 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-bold shadow-sm transition-transform active:scale-95"
+                            >
+                                印刷する
+                            </button>
+                        </div>
+                    </div>
+                    <div className="h-16 print:hidden"></div>
+                </>
+            )}
 
             {/* A4 Container */}
-            {/* A4 Scroll Container */}
-            <div className="w-full overflow-x-auto print:overflow-visible pb-8 px-4 md:px-0 scrollbar-hide">
+            {/* A4 Content Container */}
+            <div className={`w-full ${!isMobile ? 'overflow-x-auto pb-8 px-4 md:px-0 scrollbar-hide flex justify-center' : 'fixed top-0 left-0 -z-10'}`}>
                 <div id="print-content" className="bg-white shadow-2xl print:shadow-none mx-auto print:mx-0 print:w-full min-w-[210mm]">
                     {data.documentType === 'invoice' ? (
                         <InvoiceDocument

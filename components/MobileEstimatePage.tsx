@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PlanCategory, PlanId, AttendeeTier, Item, AttendeeOption, Plan, CustomerInfo } from '../types';
 import DetailModal from './DetailModal';
-import Footer from './Footer';
+import MobileFooter from './MobileFooter';
 import { Info, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useEstimateSystem } from '../hooks/useEstimateSystem';
 
@@ -265,7 +265,7 @@ const MobileEstimatePage: React.FC<MobileEstimatePageProps> = ({ system, onOutpu
             </main>
 
             {/* Footer */}
-            <Footer
+            <MobileFooter
                 total={totalCost}
                 onInputClick={goToInputPage}
                 onOutputClick={onOutputClick}

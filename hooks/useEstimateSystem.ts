@@ -38,6 +38,12 @@ export const useEstimateSystem = () => {
 
     // Fetch data from Supabase
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('print') === 'true') {
+            setIsPrintMode(true);
+            return; // Skip data fetching if print mode
+        }
+
         // Skip fetching if in print mode (PrintPreview handles its own data loading from localStorage)
         if (isPrintMode) return;
 

@@ -126,20 +126,20 @@ const PrintPreview: React.FC = () => {
                         <div className="flex gap-4">
                             <button
                                 onClick={() => window.close()}
-                                className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100 transition-colors"
+                                className="px-6 py-3 rounded border border-gray-300 hover:bg-gray-100 transition-colors text-lg whitespace-nowrap"
                             >
                                 閉じる
                             </button>
                             <button
                                 onClick={handleDownloadPDF}
                                 disabled={isGeneratingPdf}
-                                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-6 py-3 rounded bg-blue-600 text-white hover:bg-blue-700 font-bold shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-lg whitespace-nowrap"
                             >
                                 {isGeneratingPdf ? '作成中...' : 'PDFダウンロード'}
                             </button>
                             <button
                                 onClick={() => window.print()}
-                                className="px-6 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-bold shadow-sm transition-transform active:scale-95"
+                                className="px-8 py-3 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-bold shadow-sm transition-transform active:scale-95 text-lg whitespace-nowrap"
                             >
                                 印刷する
                             </button>

@@ -14,7 +14,7 @@ const Footer: React.FC<FooterProps> = ({ total, onInputClick, onOutputClick, onI
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0">
         <div className="text-gray-800 flex items-center justify-between w-full md:w-auto md:justify-start">
           <span className="text-sm md:text-3xl font-bold mr-2 md:mr-4">概算額(税抜)</span>
-          <span className="font-extrabold text-emerald-700 tracking-tight leading-none text-3xl md:text-[3.5rem]">¥{total.toLocaleString()}</span>
+          <span className="font-extrabold text-emerald-700 tracking-tight leading-none text-3xl md:text-6xl">¥{total.toLocaleString()}</span>
         </div>
         <div className="flex gap-2 w-full md:w-auto justify-between md:justify-end">
           {/* Customer Input Button */}

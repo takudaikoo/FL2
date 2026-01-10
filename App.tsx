@@ -42,6 +42,7 @@ const App: React.FC = () => {
     }
     if (params.get('mobile') === 'true') {
       setIsMobile(true);
+      setViewMode('start');
     }
 
   }, []);
@@ -243,6 +244,7 @@ const App: React.FC = () => {
         onOutputClick={handleOutputClick}
         onInvoiceClick={handleInvoiceClick}
         goToInputPage={goToInputPage}
+        onLoadClick={handleLoadEstimate}
       />
     );
   }

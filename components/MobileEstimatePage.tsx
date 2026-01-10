@@ -10,9 +10,10 @@ interface MobileEstimatePageProps {
     onOutputClick: () => Promise<void>;
     onInvoiceClick: () => Promise<void>;
     goToInputPage: () => void;
+    onLoadClick: () => Promise<void>;
 }
 
-const MobileEstimatePage: React.FC<MobileEstimatePageProps> = ({ system, onOutputClick, onInvoiceClick, goToInputPage }) => {
+const MobileEstimatePage: React.FC<MobileEstimatePageProps> = ({ system, onOutputClick, onInvoiceClick, goToInputPage, onLoadClick }) => {
     const {
         category,
         selectedPlanId,
@@ -50,8 +51,14 @@ const MobileEstimatePage: React.FC<MobileEstimatePageProps> = ({ system, onOutpu
     return (
         <div className="flex flex-col min-h-screen bg-gray-50 pb-24">
             {/* Mobile Header */}
-            <div className="bg-white border-b border-gray-200 p-4 sticky top-0 z-20 shadow-sm">
-                <h1 className="text-lg font-bold text-center text-gray-800">お見積り作成 (Mobile)</h1>
+            <div className="bg-white border-b border-gray-200 p-4 sticky top-0 z-20 shadow-sm flex items-center justify-between">
+                <h1 className="text-lg font-bold text-gray-800">お見積り作成</h1>
+                <button
+                    onClick={onLoadClick}
+                    className="text-xs bg-gray-100 border border-gray-300 rounded px-3 py-1.5 text-gray-500 hover:bg-gray-200"
+                >
+                    呼出
+                </button>
             </div>
 
             <main className="flex-1 p-4 w-full max-w-lg mx-auto">

@@ -290,10 +290,18 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             </div>
 
                             {/* Applicant Address */}
-                            <div className="flex border-b border-gray-400 h-12 bg-blue-50/10">
+                            <div className="flex border-b border-gray-400 h-10 bg-blue-50/10">
                                 <LabelCell>住　　所</LabelCell>
                                 <ValueCell className="text-xs leading-tight py-1">
                                     {customerInfo?.applicantAddress}
+                                </ValueCell>
+                            </div>
+
+                            {/* Applicant Phone */}
+                            <div className="flex border-b border-gray-400 h-10 bg-blue-50/10">
+                                <LabelCell>電話番号</LabelCell>
+                                <ValueCell className="text-xs">
+                                    {customerInfo?.applicantPhone}
                                 </ValueCell>
                             </div>
 

@@ -22,6 +22,7 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
         applicantBirthDate: '',
         applicantPostalCode: '',
         applicantAddress: '',
+        applicantPhone: '',
         chiefMournerName: '',
         chiefMournerAddress: '',
         chiefMournerPhone: '',
@@ -324,6 +325,17 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
                                         />
                                     </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1.5">申込者電話番号</label>
+                                    <input
+                                        type="tel"
+                                        name="applicantPhone"
+                                        value={formData.applicantPhone || ''}
+                                        onChange={handleChange}
+                                        placeholder="例: 090-1234-5678"
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
+                                    />
                                 </div>
                             </div>
                             <div className="md:col-span-1">

@@ -69,6 +69,7 @@ export interface CustomerInfo {
   applicantAge?: string;
   applicantPostalCode?: string;
   applicantAddress?: string;
+  applicantPhone?: string;
 
   chiefMournerName: string;
   chiefMournerAddress: string;

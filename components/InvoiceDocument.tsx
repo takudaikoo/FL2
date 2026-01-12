@@ -152,10 +152,10 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
             </div>
 
             {/* Top Layout: Customer Info vs Company Info */}
-            <div className="flex justify-between items-start mb-8" style={{ marginTop: '15px' }}>
+            <div className="grid grid-cols-2 gap-8 mb-8" style={{ marginTop: '15px' }}>
 
-                {/* Left: Customer Info (55%) */}
-                <div className="w-[55%]">
+                {/* Left: Customer Info (50%) */}
+                <div>
                     <div className="border-b border-black bg-gray-100 py-1 px-2 text-sm font-bold mb-4 !print-color-adjust-exact">
                         お客様情報
                     </div>
@@ -163,15 +163,15 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                     <div className="px-2">
                         {/* Address */}
                         <div className="mb-3">
-                            <div className="text-sm leading-relaxed">
+                            <div className="text-sm leading-relaxed break-words">
                                 <div>〒{(customerInfo?.applicantAddress || customerInfo?.chiefMournerAddress)?.split(' ')[0]?.replace('〒', '') || '　　-　　'}</div>
-                                <div className="mt-1">{(customerInfo?.applicantAddress || customerInfo?.chiefMournerAddress)?.split(' ').slice(1).join(' ') || ''}</div>
+                                <div className="mt-1 break-words">{(customerInfo?.applicantAddress || customerInfo?.chiefMournerAddress)?.split(' ').slice(1).join(' ') || ''}</div>
                             </div>
                         </div>
 
                         {/* Applicant Name */}
                         <div className="mb-3">
-                            <div className="text-xl font-bold border-b border-black inline-block pr-12 pb-1">
+                            <div className="text-xl font-bold border-b border-black inline-block pr-12 pb-1 break-words max-w-full">
                                 {customerInfo?.applicantName || '　　　　'} 様
                             </div>
                         </div>
@@ -180,14 +180,14 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                         <div>
                             <div className="text-xs text-gray-500 mb-0.5">お電話番号</div>
                             <div className="text-sm">
-                                {customerInfo?.chiefMournerMobile || customerInfo?.chiefMournerPhone || ''}
+                                {customerInfo?.applicantPhone || customerInfo?.chiefMournerMobile || customerInfo?.chiefMournerPhone || ''}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Right: Company Info (40%) */}
-                <div className="w-[40%] text-right relative">
+                {/* Right: Company Info (50%) */}
+                <div className="text-right relative">
                     <div className="font-bold text-lg mb-1">{info.name}</div>
                     <div className="text-xs leading-relaxed text-gray-600">
                         <div>{info.address}</div>

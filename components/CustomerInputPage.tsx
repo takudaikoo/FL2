@@ -20,6 +20,8 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
         applicantName: '',
         applicantRelation: '',
         applicantBirthDate: '',
+        applicantPostalCode: '',
+        applicantAddress: '',
         chiefMournerName: '',
         chiefMournerAddress: '',
         chiefMournerPhone: '',
@@ -35,6 +37,7 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
 
 
     const [postalCodeInput, setPostalCodeInput] = useState('');
+    const [applicantPostalCodeInput, setApplicantPostalCodeInput] = useState('');
 
     const calculateAge = (birthDate: string): string => {
         if (!birthDate) return '';
@@ -74,6 +77,33 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
         }
     };
 
+    const fetchApplicantAddress = async (zip: string) => {
+        try {
+            const response = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zip}`);
+            const data = await response.json();
+            if (data.results && data.results[0]) {
+                const res = data.results[0];
+                const address = `${res.address1}${res.address2}${res.address3}`;
+                // Format: 〒000-0000 Address
+                const formattedZip = `〒${zip.slice(0, 3)}-${zip.slice(3)}`;
+                const fullAddress = `${formattedZip} ${address}`;
+
+                setFormData(prev => ({ ...prev, applicantAddress: fullAddress }));
+            }
+        } catch (error) {
+            console.error('Failed to fetch address:', error);
+        }
+    };
+
+    const handleApplicantPostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value.replace(/-/g, '');
+        setApplicantPostalCodeInput(val);
+        setFormData(prev => ({ ...prev, applicantPostalCode: val }));
+        if (val.length === 7) {
+            fetchApplicantAddress(val);
+        }
+    };
+
     React.useEffect(() => {
         if (initialData) {
             setFormData(initialData);
@@ -81,6 +111,12 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
             const match = initialData.address.match(/〒(\d{3}-\d{4})/);
             if (match) {
                 setPostalCodeInput(match[1].replace('-', ''));
+            }
+            if (initialData.applicantPostalCode) {
+                setApplicantPostalCodeInput(initialData.applicantPostalCode);
+            } else if (initialData.applicantAddress) {
+                const matchApp = initialData.applicantAddress.match(/〒(\d{3}-\d{4})/);
+                if (matchApp) setApplicantPostalCodeInput(matchApp[1].replace('-', ''));
             }
         }
     }, [initialData]);
@@ -263,6 +299,32 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
                                     placeholder="自動計算"
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
                                 />
+                            </div>
+                            <div className="md:col-span-3 space-y-4 border-t border-gray-100 pt-4 mt-2 mb-2">
+                                <div className="flex flex-col md:flex-row gap-4">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">申込者郵便番号</label>
+                                        <input
+                                            type="text"
+                                            value={applicantPostalCodeInput}
+                                            onChange={handleApplicantPostalCodeChange}
+                                            placeholder="例: 2530085"
+                                            maxLength={7}
+                                            className="w-48 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <label className="block text-sm font-bold text-gray-700 mb-1.5">申込者住所</label>
+                                        <input
+                                            type="text"
+                                            name="applicantAddress"
+                                            value={formData.applicantAddress || ''}
+                                            onChange={handleChange}
+                                            placeholder="自動入力または手動入力"
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             <div className="md:col-span-1">
                                 <label className="block text-sm font-bold text-gray-700 mb-1.5">喪主様氏名</label>

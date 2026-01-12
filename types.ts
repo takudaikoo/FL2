@@ -67,6 +67,8 @@ export interface CustomerInfo {
   applicantRelation: string;
   applicantBirthDate: string;
   applicantAge?: string;
+  applicantPostalCode?: string;
+  applicantAddress?: string;
 
   chiefMournerName: string;
   chiefMournerAddress: string;

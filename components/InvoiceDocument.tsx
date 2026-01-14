@@ -33,18 +33,14 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
 }) => {
     const info = COMPANY_INFO[logoType];
     const TAX_RATE = 0.10;
-    const totalTax = Math.floor(totalCost * TAX_RATE);
-    const totalWithTax = totalCost + totalTax;
-
+    // Dates
     const today = new Date();
-    const formattedDate = `${today.getFullYear()}年 ${today.getMonth() + 1}月 ${today.getDate()}日`;
+    const formattedDate = today.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+    const deadline = new Date(today);
+    deadline.setDate(deadline.getDate() + 7);
+    const formattedDeadline = deadline.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Payment Deadline: 7 days from today
-    const deadlineDate = new Date(today);
-    deadlineDate.setDate(today.getDate() + 7);
-    const formattedDeadline = `${deadlineDate.getFullYear()}年 ${deadlineDate.getMonth() + 1}月 ${deadlineDate.getDate()}日`;
-
-    // --- Helpers (Reused from QuoteDocument) ---
+    // Calculate Prices
     const getItemPrice = (item: Item): number => {
         if (item.type === 'checkbox' || item.type === 'included') return item.basePrice || 0;
         if (item.type === 'dropdown') {
@@ -70,21 +66,18 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         return 0;
     };
 
-    // Separate included items vs other options
+    // Filter Items
     const includedItems = items.filter(item => {
-        if (!item.allowedPlans.includes(plan.id)) return false;
+        if (item.allowedPlans && !item.allowedPlans.includes(plan.id)) return false;
         return item.type === 'included';
     });
 
     const displayItems = items.filter((item) => {
-        if (!item.allowedPlans.includes(plan.id)) return false;
-
-        // Exclude included items 
+        if (item.allowedPlans && !item.allowedPlans.includes(plan.id)) return false;
         if (item.type === 'included') return false;
 
         let isSelected = false;
         if (item.type === 'free_input') isSelected = true;
-
         if (item.type === 'checkbox' || item.type === 'tier_dependent') {
             isSelected = selectedOptions.has(item.id);
         }
@@ -93,11 +86,25 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         }
 
         if (!isSelected) return false;
-        const price = getItemPrice(item);
-        return price !== 0;
+        return getItemPrice(item) !== 0;
     });
 
-    // Included Items Rows with "Plan included" designation
+    // Identify non-taxable items
+    const NON_TAXABLE_NAMES = ['火葬料金', '控室料金', '斎場料金'];
+
+    const taxableOptionItems = displayItems.filter(item => !NON_TAXABLE_NAMES.includes(item.name));
+    const nonTaxableOptionItems = displayItems.filter(item => NON_TAXABLE_NAMES.includes(item.name));
+
+    // Calculate Totals using ONLY local data to ensure consistency with display
+    const planPrice = plan.price;
+    const taxableOptionsTotal = taxableOptionItems.reduce((sum, item) => sum + getItemPrice(item), 0);
+    const nonTaxableOptionsTotal = nonTaxableOptionItems.reduce((sum, item) => sum + getItemPrice(item), 0);
+
+    const taxableSubtotal = planPrice + taxableOptionsTotal; // Plan is always taxable
+    const taxAmount = Math.floor(taxableSubtotal * TAX_RATE);
+    const finalTotal = taxableSubtotal + taxAmount + nonTaxableOptionsTotal;
+
+    // Included Items Rows
     const includedRows = includedItems.map(item => ({
         name: item.name,
         price: 0,
@@ -105,9 +112,8 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         type: 'included'
     }));
 
-
-    // Main rows (Options)
-    const optionRows = displayItems.map(item => {
+    // Taxable Option Rows
+    const taxableOptionRows = taxableOptionItems.map(item => {
         let detail = '';
         if (item.type === 'dropdown' && item.options) {
             const gradeId = selectedGrades.get(item.id);
@@ -122,11 +128,27 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         };
     });
 
-    // Add Base Plan Row at the top, then included items, then options
-    const allRows = [
+    // Non-Taxable Option Rows
+    const nonTaxableOptionRows = nonTaxableOptionItems.map(item => {
+        let detail = '';
+        if (item.type === 'dropdown' && item.options) {
+            const gradeId = selectedGrades.get(item.id);
+            const option = item.options.find(o => o.id === gradeId);
+            if (option) detail = option.name;
+        }
+        return {
+            name: item.name,
+            price: getItemPrice(item),
+            detail,
+            type: item.type
+        };
+    });
+
+    // Taxable Rows (Plan + Included + Taxable Options)
+    const taxableRows = [
         { name: `基本プラン (${plan.name})`, price: plan.price, detail: '', type: 'plan' },
         ...includedRows,
-        ...optionRows
+        ...taxableOptionRows
     ];
 
     return (
@@ -216,7 +238,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                 </div>
                 <div className="inline-block pr-12 pb-2 bg-gray-100 px-4 !print-color-adjust-exact" style={{ borderBottom: '3px solid black' }}>
                     <span className="font-bold text-xl">ご請求金額</span>
-                    <span className="font-bold text-4xl font-mono">　　　¥{totalWithTax.toLocaleString()} -</span>
+                    <span className="font-bold text-4xl font-mono">　　　¥{finalTotal.toLocaleString()} -</span>
                     <span className="text-sm ml-2">(税込)</span>
                 </div>
             </div>
@@ -231,9 +253,9 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                         <div className="flex-1 text-right py-1 px-2">金額 (税抜)</div>
                     </div>
 
-                    {/* Table Body */}
+                    {/* Table Body (Taxable) */}
                     <div>
-                        {allRows.map((row, index) => (
+                        {taxableRows.map((row, index) => (
                             <div key={index} className="flex border-b border-black last:border-0">
                                 <div className="flex-1 text-left py-2 px-2 border-r border-black truncate">
                                     {row.name}
@@ -247,21 +269,56 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                             </div>
                         ))}
                     </div>
+
+                    {/* Non-Taxable Section */}
+                    {nonTaxableOptionRows.length > 0 && (
+                        <>
+                            {/* Non-taxable Header */}
+                            <div className="flex bg-gray-100 font-bold border-y border-black !print-color-adjust-exact">
+                                <div className="flex-1 text-left py-1 px-2">非課税対象</div>
+                                <div className="w-[20%] border-l border-black"></div>
+                                <div className="flex-1 border-l border-black"></div>
+                            </div>
+                            {/* Non-taxable Body */}
+                            <div>
+                                {nonTaxableOptionRows.map((row, index) => (
+                                    <div key={`nt-${index}`} className="flex border-b border-black last:border-0">
+                                        <div className="flex-1 text-left py-2 px-2 border-r border-black truncate">
+                                            {row.name}
+                                        </div>
+                                        <div className="w-[20%] text-center py-2 px-2 border-r border-black truncate text-gray-600">
+                                            {row.detail}
+                                        </div>
+                                        <div className="flex-1 text-right py-2 px-2 font-mono">
+                                            ¥{row.price.toLocaleString()}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Subtotal / Tax / Total Calculation (Right aligned below table) */}
                 <div className="flex flex-col items-end mt-4 text-sm">
                     <div className="flex justify-between w-[250px] border-b border-gray-300 py-1" style={{ borderTop: '1px solid #374151' }}>
                         <span>小計 (税抜)</span>
-                        <span className="font-mono">¥{totalCost.toLocaleString()}</span>
+                        <span className="font-mono">¥{taxableSubtotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between w-[250px] border-b border-gray-300 py-1">
                         <span>消費税 (10%)</span>
-                        <span className="font-mono">¥{totalTax.toLocaleString()}</span>
+                        <span className="font-mono">¥{taxAmount.toLocaleString()}</span>
                     </div>
+                    {/* Non-Taxable Total Row */}
+                    {nonTaxableOptionsTotal > 0 && (
+                        <div className="flex justify-between w-[250px] border-b border-gray-300 py-1">
+                            <span>非課税計</span>
+                            <span className="font-mono">¥{nonTaxableOptionsTotal.toLocaleString()}</span>
+                        </div>
+                    )}
                     <div className="flex justify-between w-[250px] border-b-2 border-black py-2 font-bold">
                         <span>合計 (税込み)</span>
-                        <span className="font-mono">¥{totalWithTax.toLocaleString()}</span>
+                        <span className="font-mono">¥{finalTotal.toLocaleString()}</span>
                     </div>
                 </div>
             </div>

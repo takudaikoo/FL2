@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CustomerInfo } from '../types';
+import { DateInput, DateMode } from './DateInput';
 import { ArrowLeft, Printer, Save } from 'lucide-react';
 
 interface CustomerInputPageProps {
@@ -12,14 +13,17 @@ interface CustomerInputPageProps {
 const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAndPrint, isSaving, initialData }) => {
     const [formData, setFormData] = useState<CustomerInfo>(initialData || {
         deathDate: '',
+        deathDateMode: 'western',
         deceasedName: '',
         birthDate: '',
+        birthDateMode: 'western',
         age: '',
         address: '',
         honseki: '',
         applicantName: '',
         applicantRelation: '',
         applicantBirthDate: '',
+        applicantBirthDateMode: 'western',
         applicantPostalCode: '',
         applicantAddress: '',
         applicantPhone: '',
@@ -127,13 +131,27 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
         setFormData(prev => {
             const newData = { ...prev, [name]: value };
 
-            // Auto-calculate age
+            // Auto-calculate age (for standard inputs if any left, but DateInput uses handleDateChange)
             if (name === 'birthDate') {
                 const age = calculateAge(value);
                 newData.age = age;
             } else if (name === 'applicantBirthDate') {
                 const age = calculateAge(value);
                 newData.applicantAge = age;
+            }
+
+            return newData;
+        });
+    };
+
+    const handleDateChange = (field: keyof CustomerInfo, modeField: keyof CustomerInfo, val: string, mode: DateMode) => {
+        setFormData(prev => {
+            const newData = { ...prev, [field]: val, [modeField]: mode };
+
+            if (field === 'birthDate') {
+                newData.age = calculateAge(val);
+            } else if (field === 'applicantBirthDate') {
+                newData.applicantAge = calculateAge(val);
             }
 
             return newData;
@@ -174,12 +192,10 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1.5">死亡月日</label>
-                                <input
-                                    type="date"
-                                    name="deathDate"
+                                <DateInput
                                     value={formData.deathDate}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
+                                    mode={formData.deathDateMode || 'western'}
+                                    onChange={(val, mode) => handleDateChange('deathDate', 'deathDateMode', val, mode)}
                                 />
                             </div>
                             <div>
@@ -195,12 +211,10 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1.5">生年月日</label>
-                                <input
-                                    type="date"
-                                    name="birthDate"
+                                <DateInput
                                     value={formData.birthDate}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
+                                    mode={formData.birthDateMode || 'western'}
+                                    onChange={(val, mode) => handleDateChange('birthDate', 'birthDateMode', val, mode)}
                                 />
                             </div>
                             <div>
@@ -282,12 +296,10 @@ const CustomerInputPage: React.FC<CustomerInputPageProps> = ({ onBack, onSaveAnd
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1.5">生年月日</label>
-                                <input
-                                    type="date"
-                                    name="applicantBirthDate"
+                                <DateInput
                                     value={formData.applicantBirthDate}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-gray-50 transition-all"
+                                    mode={formData.applicantBirthDateMode || 'western'}
+                                    onChange={(val, mode) => handleDateChange('applicantBirthDate', 'applicantBirthDateMode', val, mode)}
                                 />
                             </div>
                             <div>

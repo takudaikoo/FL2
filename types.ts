@@ -81,6 +81,11 @@ export interface CustomerInfo {
   templePhone: string;
   templeFax: string;
   remarks?: string;
+
+  // Date Modes
+  deathDateMode?: 'western' | 'japanese';
+  birthDateMode?: 'western' | 'japanese';
+  applicantBirthDateMode?: 'western' | 'japanese';
 }
 
 export interface Estimate {

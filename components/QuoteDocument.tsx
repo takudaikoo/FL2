@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plan, Item, AttendeeTier } from '../types';
 import { COMPANY_INFO } from '../constants';
+import { formatDateWithMode } from '../lib/dateUtils';
 
 interface QuoteDocumentProps {
     plan: Plan;
@@ -218,7 +219,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="flex border-b border-gray-400 h-10">
                                 <LabelCell>死亡月日</LabelCell>
                                 <ValueCell className="justify-end bg-white">
-                                    {customerInfo?.deathDate || <span className="text-gray-300 tracking-widest mr-4">　　年　　月　　日</span>}
+                                    {customerInfo?.deathDate ? formatDateWithMode(customerInfo.deathDate, customerInfo.deathDateMode) : <span className="text-gray-300 tracking-widest mr-4">　　年　　月　　日</span>}
                                 </ValueCell>
                             </div>
 
@@ -235,7 +236,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                                 <LabelCell>生年月日</LabelCell>
                                 <ValueCell className="justify-end gap-8">
                                     {customerInfo?.birthDate ? (
-                                        <span>{customerInfo.birthDate}</span>
+                                        <span>{formatDateWithMode(customerInfo.birthDate, customerInfo.birthDateMode)}</span>
                                     ) : (
                                         <span className="text-gray-300 tracking-widest">　　年　　月　　日</span>
                                     )}
@@ -285,7 +286,7 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
                             <div className="flex border-b border-gray-400 h-10">
                                 <LabelCell>生年月日</LabelCell>
                                 <ValueCell className="justify-end bg-blue-50/10 text-sm">
-                                    {customerInfo?.applicantBirthDate || <span className="text-gray-300 tracking-widest mr-4">　　年　　月　　日</span>}
+                                    {customerInfo?.applicantBirthDate ? formatDateWithMode(customerInfo.applicantBirthDate, customerInfo.applicantBirthDateMode) : <span className="text-gray-300 tracking-widest mr-4">　　年　　月　　日</span>}
                                 </ValueCell>
                             </div>
 

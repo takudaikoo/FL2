@@ -16,6 +16,7 @@ const ItemsManager: React.FC = () => {
     }, []);
 
     const fetchItems = async () => {
+        setLoading(true);
         try {
             const { data, error } = await supabase
                 .from('items')
@@ -154,7 +155,7 @@ const ItemsManager: React.FC = () => {
             displayOrder: maxOrder + 1,
             type: 'checkbox',
             basePrice: 0,
-            allowedPlans: ['a', 'b', 'c', 'd'],
+            allowedPlans: ['a', 'b', 'c', 'd', 'e'],
             options: [], // Initialize options
             details: [], // Initialize details
             tierPrices: { A: 0, B: 0, C: 0, D: 0 } // Initialize tierPrices

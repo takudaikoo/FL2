@@ -18,7 +18,7 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
         try {
             setUploading(true);
             const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
             const filePath = `${fileName}`;
 
             const { error: uploadError } = await supabase.storage
@@ -102,11 +102,11 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                                 onChange={e => setEditingItem({ ...editingItem, type: e.target.value as any })}
                                 className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
                             >
-                                <option value="included">プランに含まれる (included)</option>
-                                <option value="checkbox">チェックボックス (checkbox)</option>
-                                <option value="dropdown">ドロップダウン (dropdown)</option>
-                                <option value="tier_dependent">人数帯連動 (tier_dependent)</option>
-                                <option value="free_input">自由入力 (free_input)</option>
+                                <option value="included">基本セット (プランに含まれる)</option>
+                                <option value="checkbox">追加オプション (チェックボックス)</option>
+                                <option value="dropdown">グレード選択 (ドロップダウン)</option>
+                                <option value="tier_dependent">人数連動項目</option>
+                                <option value="free_input">自由入力項目</option>
                             </select>
                         </div>
 
@@ -171,20 +171,21 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">利用可能プラン</label>
                             <div className="flex flex-wrap gap-4">
-                                {['a', 'b', 'c', 'd'].map(planId => (
+                                {['a', 'b', 'c', 'd', 'e'].map(planId => (
                                     <label key={planId} className={`
                                         flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-all
-                                        ${editingItem.allowedPlans.includes(planId)
+                                        ${editingItem.allowedPlans.includes(planId as any)
                                             ? 'bg-emerald-50 border-emerald-200 text-emerald-700 font-bold shadow-sm'
                                             : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}
                                     `}>
                                         <input
                                             type="checkbox"
-                                            checked={editingItem.allowedPlans.includes(planId)}
+                                            checked={editingItem.allowedPlans.includes(planId as any)}
                                             onChange={e => {
                                                 const newPlans = e.target.checked
                                                     ? [...editingItem.allowedPlans, planId]
                                                     : editingItem.allowedPlans.filter(p => p !== planId);
+                                                // @ts-ignore
                                                 setEditingItem({ ...editingItem, allowedPlans: newPlans });
                                             }}
                                             className="accent-emerald-600 w-4 h-4"
@@ -225,10 +226,10 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                                     <button
                                         onClick={() => {
                                             const newOpt = {
-                                                id: Math.random().toString(36).substr(2, 9),
+                                                id: Math.random().toString(36).substring(2, 9),
                                                 name: '新規オプション',
                                                 price: 0,
-                                                allowedPlans: ['a', 'b', 'c', 'd']
+                                                allowedPlans: ['a', 'b', 'c', 'd', 'e']
                                             };
                                             setEditingItem({
                                                 ...editingItem,
@@ -282,11 +283,11 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                                             <div>
                                                 <label className="text-xs text-gray-500 mb-1 block">対象プラン</label>
                                                 <div className="flex gap-2">
-                                                    {['a', 'b', 'c', 'd'].map(pid => (
+                                                    {['a', 'b', 'c', 'd', 'e'].map(pid => (
                                                         <label key={pid} className="flex items-center gap-1 text-xs cursor-pointer bg-white px-2 py-1 rounded border border-gray-200">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={opt.allowedPlans?.includes(pid)}
+                                                                checked={opt.allowedPlans?.includes(pid as any)}
                                                                 onChange={e => {
                                                                     const plans = opt.allowedPlans || [];
                                                                     const newPlans = e.target.checked ? [...plans, pid] : plans.filter(p => p !== pid);

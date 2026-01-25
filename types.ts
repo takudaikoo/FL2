@@ -1,6 +1,6 @@
 export type PlanCategory = 'funeral' | 'cremation';
 
-export type PlanId = 'a' | 'b' | 'c' | 'd';
+export type PlanId = 'a' | 'b' | 'c' | 'd' | 'e';
 
 export interface Plan {
   id: PlanId;

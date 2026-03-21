@@ -90,7 +90,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
     });
 
     // Identify non-taxable items
-    const NON_TAXABLE_NAMES = ['火葬料金', '控室料金', '斎場料金'];
+    const NON_TAXABLE_NAMES = ['火葬料金'];
 
     const taxableOptionItems = displayItems.filter(item => !NON_TAXABLE_NAMES.includes(item.name));
     const nonTaxableOptionItems = displayItems.filter(item => NON_TAXABLE_NAMES.includes(item.name));

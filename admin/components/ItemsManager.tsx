@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase, Plan } from '../../lib/supabase';
 import { Item } from '../../types';
 import { Edit, Trash2, Plus, Search, ArrowUp, ArrowDown } from 'lucide-react';
 import ItemEditor from './ItemEditor';
 
 const ItemsManager: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
+    const [plans, setPlans] = useState<Plan[]>([]);
     const [loading, setLoading] = useState(true);
     const [editingItem, setEditingItem] = useState<Item | null>(null);
     const [isNew, setIsNew] = useState(false);
@@ -18,15 +19,15 @@ const ItemsManager: React.FC = () => {
     const fetchItems = async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
-                .from('items')
-                .select('*')
-                .order('display_order', { ascending: true });
+            const [itemsResult, plansResult] = await Promise.all([
+                supabase.from('items').select('*').order('display_order', { ascending: true }),
+                supabase.from('plans').select('*').order('id'),
+            ]);
 
-            if (error) throw error;
+            if (itemsResult.error) throw itemsResult.error;
+            if (plansResult.error) throw plansResult.error;
 
-            // Convert snake_case to camelCase
-            const convertedItems = (data || []).map((item: any) => ({
+            const convertedItems = (itemsResult.data || []).map((item: any) => ({
                 id: item.id,
                 name: item.name,
                 description: item.description,
@@ -41,6 +42,7 @@ const ItemsManager: React.FC = () => {
             }));
 
             setItems(convertedItems);
+            setPlans(plansResult.data as Plan[]);
         } catch (error) {
             console.error('Error fetching items:', error);
             alert('アイテムの取得に失敗しました');
@@ -155,10 +157,10 @@ const ItemsManager: React.FC = () => {
             displayOrder: maxOrder + 1,
             type: 'checkbox',
             basePrice: 0,
-            allowedPlans: ['a', 'b', 'c', 'd', 'e'],
-            options: [], // Initialize options
-            details: [], // Initialize details
-            tierPrices: { A: 0, B: 0, C: 0, D: 0 } // Initialize tierPrices
+            allowedPlans: plans.map(p => p.id),
+            options: [],
+            details: [],
+            tierPrices: { A: 0, B: 0, C: 0, D: 0 }
         });
         setIsNew(true);
     };
@@ -176,6 +178,7 @@ const ItemsManager: React.FC = () => {
             <ItemEditor
                 item={editingItem}
                 isNew={isNew}
+                plans={plans}
                 onSave={handleSave}
                 onCancel={() => setEditingItem(null)}
             />

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase, Plan } from '../../lib/supabase';
 import { Item, DropdownOption } from '../../types';
 import { Trash2, ArrowLeft, Upload, Loader2, Plus, Image as ImageIcon } from 'lucide-react';
 
 interface ItemEditorProps {
     item: Item;
     isNew: boolean;
+    plans: Plan[];
     onSave: (item: Item) => Promise<void>;
     onCancel: () => void;
 }
 
-const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }) => {
+const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, plans, onSave, onCancel }) => {
     const [editingItem, setEditingItem] = useState<Item>(JSON.parse(JSON.stringify(item)));
     const [uploading, setUploading] = useState(false);
 
@@ -171,26 +172,25 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">利用可能プラン</label>
                             <div className="flex flex-wrap gap-4">
-                                {['a', 'b', 'c', 'd', 'e'].map(planId => (
-                                    <label key={planId} className={`
+                                {plans.map(plan => (
+                                    <label key={plan.id} className={`
                                         flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-all
-                                        ${editingItem.allowedPlans.includes(planId as any)
+                                        ${editingItem.allowedPlans.includes(plan.id)
                                             ? 'bg-emerald-50 border-emerald-200 text-emerald-700 font-bold shadow-sm'
                                             : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}
                                     `}>
                                         <input
                                             type="checkbox"
-                                            checked={editingItem.allowedPlans.includes(planId as any)}
+                                            checked={editingItem.allowedPlans.includes(plan.id)}
                                             onChange={e => {
                                                 const newPlans = e.target.checked
-                                                    ? [...editingItem.allowedPlans, planId]
-                                                    : editingItem.allowedPlans.filter(p => p !== planId);
-                                                // @ts-ignore
+                                                    ? [...editingItem.allowedPlans, plan.id]
+                                                    : editingItem.allowedPlans.filter(p => p !== plan.id);
                                                 setEditingItem({ ...editingItem, allowedPlans: newPlans });
                                             }}
                                             className="accent-emerald-600 w-4 h-4"
                                         />
-                                        <span className="uppercase">Plan {planId}</span>
+                                        <span className="text-xs">{plan.name}</span>
                                     </label>
                                 ))}
                             </div>
@@ -229,7 +229,7 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                                                 id: Math.random().toString(36).substring(2, 9),
                                                 name: '新規オプション',
                                                 price: 0,
-                                                allowedPlans: ['a', 'b', 'c', 'd', 'e']
+                                                allowedPlans: plans.map(p => p.id)
                                             };
                                             setEditingItem({
                                                 ...editingItem,
@@ -282,21 +282,21 @@ const ItemEditor: React.FC<ItemEditorProps> = ({ item, isNew, onSave, onCancel }
                                             </div>
                                             <div>
                                                 <label className="text-xs text-gray-500 mb-1 block">対象プラン</label>
-                                                <div className="flex gap-2">
-                                                    {['a', 'b', 'c', 'd', 'e'].map(pid => (
-                                                        <label key={pid} className="flex items-center gap-1 text-xs cursor-pointer bg-white px-2 py-1 rounded border border-gray-200">
+                                                <div className="flex flex-wrap gap-2">
+                                                    {plans.map(plan => (
+                                                        <label key={plan.id} className="flex items-center gap-1 text-xs cursor-pointer bg-white px-2 py-1 rounded border border-gray-200">
                                                             <input
                                                                 type="checkbox"
-                                                                checked={opt.allowedPlans?.includes(pid as any)}
+                                                                checked={opt.allowedPlans?.includes(plan.id)}
                                                                 onChange={e => {
-                                                                    const plans = opt.allowedPlans || [];
-                                                                    const newPlans = e.target.checked ? [...plans, pid] : plans.filter(p => p !== pid);
+                                                                    const currentPlans = opt.allowedPlans || [];
+                                                                    const newPlans = e.target.checked ? [...currentPlans, plan.id] : currentPlans.filter(p => p !== plan.id);
                                                                     const opts = [...(editingItem.options || [])];
-                                                                    opts[idx] = { ...opt, allowedPlans: newPlans as any };
+                                                                    opts[idx] = { ...opt, allowedPlans: newPlans };
                                                                     setEditingItem({ ...editingItem, options: opts });
                                                                 }}
                                                             />
-                                                            <span className="uppercase">{pid}</span>
+                                                            <span>{plan.id}</span>
                                                         </label>
                                                     ))}
                                                 </div>

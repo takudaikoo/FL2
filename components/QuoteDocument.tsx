@@ -158,17 +158,16 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
     const finalTotal = taxableSubtotal + taxAmount + nonTaxableOptionsTotal;
 
 
-    // Prepare table rows using taxableItems
-    const MAX_ROWS = 25;
-    const tableRows = Array.from({ length: MAX_ROWS }).map((_, index) => {
-        const item = taxableItems[index]; // Use taxableItems only for main table
-        return {
-            name: item ? item.name : '',
-            content: item ? getItemContent(item) : '',
-            price: item ? getItemPrice(item) : null,
-            type: item ? item.type : null,
-        };
-    });
+    // Separate discount/adjustment items to always show at bottom
+    const adjustmentItems = taxableItems.filter(item => item.type === 'free_input');
+    const regularTaxableItems = taxableItems.filter(item => item.type !== 'free_input');
+
+    const tableRows = [...regularTaxableItems, ...adjustmentItems].map(item => ({
+        name: item.name,
+        content: getItemContent(item),
+        price: getItemPrice(item),
+        type: item.type,
+    }));
 
     // Helper for cells
     const LabelCell = ({ children }: { children: React.ReactNode }) => (
@@ -484,27 +483,19 @@ const QuoteDocument: React.FC<QuoteDocumentProps> = ({
 
                         {/* Rows Container - Flex Grow to fill space */}
                         <div className="flex-1 flex flex-col bg-white">
-                            {/* Base Plan Row Removed as per request */}
-                            {tableRows.map((row, i) => {
-                                // Filter out empty rows unless they are placeholder used to fill space? 
-                                // Actually checking logic above, we need to FILTER items first before mapping to rows. 
-                                // But here we map over tableRows which is MAX_ROWS.
-                                // We need to update tableRows creation logic.
-                                // For now, let's just render. I need to update tableRows definition first!
-                                return (
-                                    <div key={i} className="flex border-b border-gray-200 min-h-[30px] items-center text-xs">
-                                        <div className="flex-1 px-3 border-r border-gray-200 h-full flex items-center overflow-hidden">
-                                            <span className="truncate">{row.name}</span>
-                                            {row.content && row.content !== '-' && (
-                                                <span className="text-[10px] text-gray-500 bg-gray-100 px-1 rounded shrink-0 ml-2">{row.content}</span>
-                                            )}
-                                        </div>
-                                        <div className="w-[120px] text-right px-3 h-full flex items-center justify-end font-mono text-gray-700">
-                                            {row.type === 'included' ? 'プラン内' : (row.price !== null ? `¥${row.price.toLocaleString()}` : '')}
-                                        </div>
+                            {tableRows.map((row, i) => (
+                                <div key={i} className={`flex border-b border-gray-200 min-h-[30px] items-center text-xs ${row.type === 'free_input' && (row.price ?? 0) < 0 ? 'bg-red-50/30' : ''}`}>
+                                    <div className="flex-1 px-3 border-r border-gray-200 h-full flex items-center overflow-hidden">
+                                        <span className="truncate">{row.name}</span>
+                                        {row.content && row.content !== '-' && (
+                                            <span className="text-[10px] text-gray-500 bg-gray-100 px-1 rounded shrink-0 ml-2">{row.content}</span>
+                                        )}
                                     </div>
-                                )
-                            })}
+                                    <div className={`w-[120px] text-right px-3 h-full flex items-center justify-end font-mono ${(row.price ?? 0) < 0 ? 'text-red-600' : 'text-gray-700'}`}>
+                                        {row.type === 'included' ? 'プラン内' : `¥${(row.price ?? 0).toLocaleString()}`}
+                                    </div>
+                                </div>
+                            ))}
                             {/* Fill remaining space if any */}
                             <div className="flex-1 bg-white"></div>
                         </div>

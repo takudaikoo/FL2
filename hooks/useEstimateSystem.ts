@@ -322,7 +322,7 @@ export const useEstimateSystem = () => {
             }
 
             if (content.selectedGrades) {
-                const grades = new Map(content.selectedGrades);
+                const grades = new Map<number, string>(content.selectedGrades);
                 setSelectedGrades(grades);
             }
 
@@ -330,7 +330,7 @@ export const useEstimateSystem = () => {
             if (content.customAttendeeCount) setCustomAttendeeCount(content.customAttendeeCount);
 
             if (content.freeInputValues) {
-                const freeInputs = new Map(content.freeInputValues);
+                const freeInputs = new Map<number, number>(content.freeInputValues);
                 setFreeInputValues(freeInputs);
             }
 

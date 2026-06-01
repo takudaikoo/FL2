@@ -144,11 +144,16 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
         };
     });
 
-    // Taxable Rows (Plan + Included + Taxable Options)
+    // Separate adjustment items (free_input) to show at bottom
+    const adjustmentOptionRows = taxableOptionRows.filter(r => r.type === 'free_input');
+    const regularOptionRows = taxableOptionRows.filter(r => r.type !== 'free_input');
+
+    // Taxable Rows (Plan + Included + Regular Options + Adjustments at bottom)
     const taxableRows = [
         { name: `基本プラン (${plan.name})`, price: plan.price, detail: '', type: 'plan' },
         ...includedRows,
-        ...taxableOptionRows
+        ...regularOptionRows,
+        ...adjustmentOptionRows,
     ];
 
     return (
@@ -263,7 +268,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({
                                 <div className="w-[20%] text-center py-2 px-2 border-r border-black truncate text-gray-600">
                                     {row.detail}
                                 </div>
-                                <div className="flex-1 text-right py-2 px-2 font-mono">
+                                <div className={`flex-1 text-right py-2 px-2 font-mono ${row.price < 0 ? 'text-red-600' : ''}`}>
                                     {row.type === 'included' ? 'プラン内' : `¥${row.price.toLocaleString()}`}
                                 </div>
                             </div>
